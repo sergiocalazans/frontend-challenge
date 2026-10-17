@@ -1,0 +1,142 @@
+import { expect, test, type Page } from '@playwright/test'
+
+async function search(page: Page, value: string) {
+  await page.getByRole('textbox', { name: 'Buscar NFTs' }).fill(value)
+  await page.getByRole('button', { name: 'Buscar', exact: true }).click()
+}
+async function filters(page: Page) {
+  if ((page.viewportSize()?.width ?? 1440) < 1024) await page.getByRole('button', { name: 'Abrir filtros do catálogo' }).click()
+  return page.getByRole('complementary', { name: 'Filtros de coleção' })
+}
+async function closeFilters(page: Page) {
+  if (await page.getByRole('dialog').count()) await page.keyboard.press('Escape')
+}
+async function scenario(page: Page, name: string) {
+  const status = await page.evaluate(async scenarioName => (await fetch('/api/demo/scenario', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ scenario: scenarioName }) })).status, name)
+  expect(status).toBe(200)
+}
+
+test('pagination restores URL, results and history, and filters reset the page', async ({ page }) => {
+  await page.goto('/')
+  const results = page.getByTestId('catalog-results')
+  await expect(results.locator('article')).toHaveCount(9)
+  const pagination = page.getByRole('navigation', { name: 'Paginação do catálogo' })
+  await expect(pagination.locator('[aria-current="page"]')).toHaveCount(1)
+  await expect(pagination.getByRole('link', { name: 'Página 1', exact: true })).toHaveAttribute('aria-current', 'page')
+  const first = await results.locator('article').first().getAttribute('data-testid')
+  await page.getByRole('link', { name: 'Página 2', exact: true }).click()
+  await expect(page).toHaveURL(/page=2/)
+  await expect(pagination.locator('[aria-current="page"]')).toHaveCount(1)
+  await expect(pagination.getByRole('link', { name: 'Página 2', exact: true })).toHaveAttribute('aria-current', 'page')
+  await expect(results.locator('article').first()).not.toHaveAttribute('data-testid', first!)
+  const second = await results.locator('article').first().getAttribute('data-testid')
+  await page.reload()
+  await expect(results.locator('article').first()).toHaveAttribute('data-testid', second!)
+  await page.goBack()
+  await expect(results.locator('article').first()).toHaveAttribute('data-testid', first!)
+  await page.goForward()
+  await expect(results.locator('article').first()).toHaveAttribute('data-testid', second!)
+  const panel = await filters(page)
+  await panel.getByLabel('Rede', { exact: true }).selectOption('Polygon')
+  await closeFilters(page)
+  await expect(page).not.toHaveURL(/page=2/)
+  await expect(results.locator('article')).toHaveCount(8)
+  await expect(page.getByText('Página 1 de 1', { exact: true })).toBeVisible()
+})
+
+test('combined filters reach REST, validate price and sort exact results', async ({ page }) => {
+  await page.goto('/')
+  const panel = await filters(page)
+  await panel.getByRole('radio', { name: 'Arte digital', exact: true }).check()
+  await panel.getByLabel('Rede', { exact: true }).selectOption('Ethereum')
+  await panel.getByLabel('Preço mínimo (ETH)').fill('2')
+  await panel.getByLabel('Preço máximo (ETH)').fill('1')
+  await panel.getByRole('button', { name: 'Aplicar preço' }).click()
+  await expect(panel.getByRole('alert')).toContainText('maior ou igual')
+  await panel.getByLabel('Preço mínimo (ETH)').fill('1,20')
+  await panel.getByLabel('Preço máximo (ETH)').fill('2,00')
+  const request = page.waitForRequest(request => {
+    const url = new URL(request.url())
+    return url.pathname === '/api/nfts' && url.searchParams.get('minPrice') === '1.20' && url.searchParams.get('network') === 'Ethereum' && url.searchParams.get('category') === 'art'
+  })
+  await panel.getByRole('button', { name: 'Aplicar preço' }).click()
+  await request
+  await closeFilters(page)
+  await page.getByLabel('Ordenar por').selectOption('price-desc')
+  await expect(page.getByTestId('catalog-results').locator('article')).toHaveCount(2)
+  await expect(page.getByTestId('catalog-results').locator('article').first()).toHaveAttribute('data-testid', 'nft-neon-vessel')
+  await page.reload()
+  await expect(page.getByLabel('Ordenar por')).toHaveValue('price-desc')
+  await expect(page.getByTestId('catalog-results').locator('article').first()).toHaveAttribute('data-testid', 'nft-neon-vessel')
+  await search(page, 'Cosmic')
+  await expect(page.getByTestId('catalog-results').locator('article')).toHaveCount(1)
+  await expect(page.getByTestId('nft-cosmic-bloom')).toBeVisible()
+  await page.goBack()
+  await expect(page.getByRole('textbox', { name: 'Buscar NFTs' })).toHaveValue('')
+  await expect(page.getByTestId('catalog-results').locator('article')).toHaveCount(2)
+})
+
+test('direct links preserve ETH precision and recover out-of-range or invalid URLs', async ({ page }) => {
+  await page.goto('/?minPrice=1.190000000000000001&maxPrice=1.29')
+  await expect(page.getByTestId('catalog-results').locator('article')).toHaveCount(2)
+  await expect(page.getByTestId('nft-emerald-ape')).toHaveCount(0)
+  await page.goto('/?page=999')
+  await expect(page.getByRole('heading', { name: 'Página fora do intervalo' })).toBeVisible()
+  await page.getByRole('button', { name: 'Voltar à primeira página' }).click()
+  await expect(page.getByTestId('catalog-results').locator('article')).toHaveCount(9)
+  await page.goto('/?page=-2&network=invalid&sort=invalid&minPrice=bad')
+  await expect(page.getByTestId('catalog-results').locator('article')).toHaveCount(9)
+  await expect(page.getByLabel('Ordenar por')).toHaveValue('featured')
+})
+
+test('slow and failed MSW requests display skeletons, empty results and retry recovery', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByTestId('nft-emerald-ape')).toBeVisible()
+  await scenario(page, 'slow')
+  await search(page, 'Cosmic')
+  await expect(page.getByRole('status', { name: 'Carregando NFTs' })).toBeVisible()
+  await expect(page.getByTestId('nft-cosmic-bloom')).toBeVisible()
+  await scenario(page, 'flaky')
+  await search(page, 'Violet')
+  await expect(page.getByRole('alert')).toContainText('temporariamente indisponível')
+  await page.getByRole('button', { name: 'Tentar novamente' }).click()
+  await expect(page.getByTestId('nft-violet-nomad')).toBeVisible()
+  await scenario(page, 'offline')
+  await search(page, 'Golden')
+  await expect(page.getByRole('alert')).toContainText('Não foi possível carregar os dados')
+  await scenario(page, 'default')
+  await page.getByRole('button', { name: 'Tentar novamente' }).click()
+  await expect(page.getByTestId('nft-golden-beat')).toBeVisible()
+  await search(page, 'nenhum-item-com-este-nome')
+  await expect(page.getByRole('heading', { name: 'Nenhum NFT encontrado' })).toBeVisible()
+  await page.getByRole('button', { name: 'Limpar busca e filtros' }).first().click()
+  await expect(page.getByTestId('catalog-results').locator('article')).toHaveCount(9)
+})
+
+test('a newer search cancels the older slow request without stale cards', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByTestId('nft-emerald-ape')).toBeVisible()
+  await scenario(page, 'race')
+  const pending = page.waitForRequest(request => new URL(request.url()).searchParams.get('q') === 'Emerald')
+  await search(page, 'Emerald')
+  await pending
+  const cancelled = page.waitForEvent('requestfailed', { predicate: request => new URL(request.url()).searchParams.get('q') === 'Emerald' })
+  await search(page, 'Golden')
+  await cancelled
+  await expect(page.getByTestId('nft-golden-beat')).toBeVisible()
+  await expect(page.getByTestId('nft-emerald-ape')).toHaveCount(0)
+  await expect(page).toHaveURL(/q=Golden/)
+})
+
+test('Socket.IO reconciles prices against active filters and NFT links navigate', async ({ page }) => {
+  await page.goto('/?q=Emerald&maxPrice=1.20')
+  await expect(page.getByTestId('nft-emerald-ape')).toContainText('1.19 ETH')
+  const response = await page.evaluate(async () => (await fetch('/api/demo/nfts/emerald-ape/update', { method: 'POST' })).status)
+  expect(response).toBe(200)
+  await expect(page.getByRole('heading', { name: 'Nenhum NFT encontrado' })).toBeVisible()
+  await page.getByRole('button', { name: 'Limpar busca e filtros' }).first().click()
+  await expect(page.getByTestId('nft-emerald-ape')).toContainText('1.29 ETH')
+  await page.getByRole('link', { name: 'Ver Emerald Ape #042' }).click()
+  await expect(page).toHaveURL('/nfts/emerald-ape')
+  await expect(page.getByRole('heading', { name: 'Detalhes do NFT' })).toBeVisible()
+})
