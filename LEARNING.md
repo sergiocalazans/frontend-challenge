@@ -77,3 +77,25 @@ Revise o código e execute os exemplos antes de defender a solução. O candidat
    - O teste de 320 px comprova zoom de toda a aplicação? Não. Verifica reflow da conta nessa largura; zoom real e todos os fluxos finais exigem validação adicional.
 
 **Ajuste após auditoria:** o laboratório passou a ser carregado sob demanda pela rota, com `lazyRouteComponent`. Isso separa seu código do carregamento inicial do catálogo sem retirar mocks ou funcionalidades. Pergunta de defesa: qual é o custo? A primeira visita ao laboratório precisa baixar seu chunk; o Router permite preload por intenção nos links. O navegador reutiliza o módulo nas visitas seguintes.
+
+## Feature: catálogo, busca, filtros e paginação
+
+1. **O que foi implementado:** busca por nome, filtros combináveis de categoria/rede/preço, quatro ordenações e paginação de nove itens, com estado na URL. Sidebar desktop, drawer mobile/tablet, erro recuperável, vazio, loading e página fora do intervalo. Os cards navegam para o detalhe ainda pendente.
+2. **Arquivos principais:** `features/catalog/search.ts`, `api.ts`, `contracts.ts`, `catalog-page.tsx`, `catalog-search.tsx`, `catalog-filters.tsx`, `catalog-pagination.tsx`, `lib/eth.ts`, `mocks/catalog.ts`, `fixtures.ts`, `handlers.ts` e os testes de catálogo.
+3. **Fluxo de execução:** interação → Router/URL → chave TanStack Query com todos os parâmetros → Axios com AbortSignal → MSW filtra/ordena/conta/pagina → resposta tipada → componentes. Voltar/avançar muda a URL, restaurando controles e consulta. Socket.IO invalida consultas quando o preço muda; REST recalcula quais itens ainda pertencem ao filtro.
+4. **Tecnologias utilizadas:** React, TypeScript strict, TanStack Router/Query, Axios, Tailwind, componentes shadcn/Radix, MSW, Socket.IO Client, Playwright, Vitest e Lighthouse. Nenhuma dependência nova.
+5. **Decisões técnicas:** busca por envio explícito; filtros combinados com AND; mudança de filtro/ordem reinicia a página. Valores ETH permanecem texto até conversão para wei/BigInt para comparação. URL plana preserva strings decimais; REST rejeita consulta inválida, enquanto navegação usa defaults seguros. Fixtures determinísticas reutilizam quatro imagens e têm 24 IDs. O socket envia mudanças posteriores, pois a conexão já reconcilia por REST.
+6. **Como testar:** executar typecheck, lint, build, testes unitários e E2E; abrir o início, navegar à página 2, filtrar Ethereum/Arte digital, aplicar 1,20–2,00 ETH e ordenar por maior preço. Testar refresh e histórico. Pelo laboratório, selecionar slow/race/offline/flaky e voltar ao início sem recarregar. Ver `docs/CATALOG.md` e `docs/CATALOG_VALIDATION.md` para contratos e evidências reais.
+7. **Possíveis perguntas de defesa:**
+   - Por que não paginar no componente? O servidor precisa filtrar e ordenar o conjunto completo antes de recortá-lo; paginar uma lista parcial daria resultados incorretos.
+   - Por que incluir filtros na queryKey? Cada combinação representa um recurso distinto em cache; uma resposta atrasada não deve sobrescrever outra combinação.
+   - Cancelamento basta? Não é a única proteção. AbortSignal reduz trabalho; chaves distintas e a observação da chave atual impedem mistura de resultados.
+   - Por que comparar ETH com BigInt? Number perde precisão; 1.190000000000000001 deve ser maior que 1.19. Multiplicar texto para wei preserva essa diferença sem usar float.
+   - Por que alterar o parser do Router? O parser JSON padrão pode converter um preço numérico de link direto para Number antes da validação. Parâmetros planos como texto preservam a precisão.
+   - Como garantir paginação estável? Ordenar antes do slice e desempatar por ID; a ordem de destaque segue fixtures determinísticas.
+   - Por que a URL inválida não retorna 400 visual? O navegador recebe uma visão segura; o endpoint REST mantém validação estrita. São fronteiras distintas, explicitamente documentadas.
+   - Como testar respostas fora de ordem sem timers arbitrários? O cenário de rede define latências; os testes aguardam respostas/cancelamento observáveis, e os de integração verificam a ordem efetiva de conclusão.
+   - Preço alterado pode remover um card? Sim. Ao reconsultar, o servidor aplica novamente a faixa de preço e a ordenação; não basta trocar o texto dentro do card.
+   - O catálogo implementa os 12 grupos completos? Não. Cobre o grupo 1 e amplia os grupos 11/12 e atualização de catálogo; conta, checkout e detalhe permanecem features próprias.
+
+**Execução de E2E:** após timeouts de bootstrap em rodadas com dois workers, o runner foi limitado a um processo de teste concorrente. Os casos, timeouts e baselines permanecem iguais; concorrência de requisições continua coberta dentro do teste. Isso é uma decisão de orçamento de execução, não uma garantia de que a causa de toda intermitência foi eliminada.

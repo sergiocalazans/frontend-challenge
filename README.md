@@ -79,3 +79,11 @@ Esta etapa não realiza deploy. Um futuro host estático deve servir `dist/`, pe
 ## Biblioteca de interface
 
 Acesse `/design-system` para explorar componentes, validação, layouts e estados de rede. `/account/profile` e `/account/wallets` demonstram a navegação do layout de conta; edição e sessão continuam pendentes. Consulte [guia do design system](docs/DESIGN_SYSTEM.md) e [validação desta feature](docs/DESIGN_SYSTEM_VALIDATION.md) para contratos de componentes, decisões baseadas nos SVGs e evidências.
+
+## Catálogo funcional
+
+O início permite buscar por nome, combinar categoria/rede/faixa ETH, ordenar e paginar. A URL preserva essa combinação no refresh e no histórico. Existem 24 NFTs simulados, com nove itens por página e quatro imagens locais reutilizadas. Os cards navegam para a rota de detalhe, cujo fluxo ainda está pendente.
+
+No laboratório, os cenários adicionais `race`, `offline` e `flaky` exercitam respostas fora de ordem, falha de conexão e recuperação. Selecione um cenário e volte ao início pelos links internos; refresh reinicia o cenário configurado em `VITE_MOCK_SCENARIO`. `race` atrasa a busca exata Emerald; `flaky` falha nas duas primeiras consultas do cenário. Consulte [guia do catálogo](docs/CATALOG.md) e [resultados desta feature](docs/CATALOG_VALIDATION.md).
+
+O Playwright usa um worker por padrão para reduzir contenção entre processos Chromium. Os testes de concorrência continuam disparando requisições sobrepostas no navegador, sem alteração de timeout ou retries para esconder falhas.

@@ -1,0 +1,227 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: catalog.spec.ts >> a newer search cancels the older slow request without stale cards
+- Location: tests\e2e\catalog.spec.ts:105:1
+
+# Error details
+
+```
+Error: page.evaluate: TypeError: Failed to fetch
+    at eval (eval at evaluate (:370:30), <anonymous>:1:30)
+    at UtilityScript.evaluate (<anonymous>:372:16)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - link "Pular para conteúdo" [ref=e3] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e4]:
+    - link "Kurio — início" [ref=e5] [cursor=pointer]:
+      - /url: /
+      - text: KURIO
+    - navigation "Navegação principal" [ref=e6]:
+      - link "Início" [ref=e7] [cursor=pointer]:
+        - /url: /
+      - link "Componentes" [ref=e8] [cursor=pointer]:
+        - /url: /design-system
+    - generic [ref=e9]:
+      - link "Abrir carrinho" [ref=e10] [cursor=pointer]:
+        - /url: /cart
+      - link "Entrar" [ref=e11] [cursor=pointer]:
+        - /url: /login
+  - main [active] [ref=e12]:
+    - region [ref=e13]:
+      - generic [ref=e14]:
+        - paragraph [ref=e15]: Bem-vindo à Kurio
+        - heading "SEJA DONO DO FUTURO DA ARTE DIGITAL" [level=1] [ref=e16]
+        - paragraph [ref=e17]: Descubra NFTs selecionados de criadores emergentes e consagrados.
+        - link "Explorar coleções" [ref=e18] [cursor=pointer]:
+          - /url: "#catalogo"
+      - img "Macaco com óculos e jaqueta verde, destaque da coleção Kurio" [ref=e19]
+    - region [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e22]:
+          - paragraph [ref=e23]: Arte para colecionar
+          - heading "Todos os NFTs" [level=2] [ref=e24]
+        - search [ref=e26]:
+          - generic [ref=e27]: Buscar NFTs
+          - textbox "Buscar NFTs" [ref=e28]:
+            - /placeholder: Explorar coleções
+          - button "Buscar" [ref=e29] [cursor=pointer]
+      - generic [ref=e30]:
+        - complementary "Filtros de coleção" [ref=e32]:
+          - heading "Coleções" [level=2] [ref=e33]
+          - group "Categoria" [ref=e34]:
+            - generic [ref=e36] [cursor=pointer]:
+              - radio "Todas as coleções" [checked] [ref=e37]
+              - text: Todas as coleções
+            - generic [ref=e38] [cursor=pointer]:
+              - radio "Arte digital" [ref=e39]
+              - text: Arte digital
+            - generic [ref=e40] [cursor=pointer]:
+              - radio "Fotografia" [ref=e41]
+              - text: Fotografia
+            - generic [ref=e42] [cursor=pointer]:
+              - radio "Música" [ref=e43]
+              - text: Música
+            - generic [ref=e44] [cursor=pointer]:
+              - radio "Arte 3D" [ref=e45]
+              - text: Arte 3D
+            - generic [ref=e46] [cursor=pointer]:
+              - radio "Colecionáveis" [ref=e47]
+              - text: Colecionáveis
+            - generic [ref=e48] [cursor=pointer]:
+              - radio "Generativa" [ref=e49]
+              - text: Generativa
+            - generic [ref=e50] [cursor=pointer]:
+              - radio "Jogos" [ref=e51]
+              - text: Jogos
+            - generic [ref=e52] [cursor=pointer]:
+              - radio "Assinaturas" [ref=e53]
+              - text: Assinaturas
+            - generic [ref=e54] [cursor=pointer]:
+              - radio "Utilidade" [ref=e55]
+              - text: Utilidade
+          - generic [ref=e56]:
+            - heading "Faixa de preço" [level=3] [ref=e57]
+            - generic [ref=e58]:
+              - generic [ref=e59]: Preço mínimo (ETH)
+              - textbox "Preço mínimo (ETH)" [ref=e60]:
+                - /placeholder: 0,00
+            - generic [ref=e61]:
+              - generic [ref=e62]: Preço máximo (ETH)
+              - textbox "Preço máximo (ETH)" [ref=e63]:
+                - /placeholder: Sem limite
+            - button "Aplicar preço" [ref=e64] [cursor=pointer]
+          - generic [ref=e65]:
+            - generic [ref=e66]: Rede
+            - combobox "Rede" [ref=e67] [cursor=pointer]:
+              - option "Todas as redes" [selected]
+              - option "Ethereum"
+              - option "Polygon"
+              - option "Solana"
+          - button "Limpar filtros" [ref=e68] [cursor=pointer]
+        - generic [ref=e69]:
+          - generic [ref=e70]:
+            - status [ref=e71]: 24 NFTs encontrados
+            - generic [ref=e72]:
+              - generic [ref=e73]: Ordenar por
+              - combobox "Ordenar por" [ref=e74] [cursor=pointer]:
+                - option "Destaques" [selected]
+                - option "Listados recentemente"
+                - option "Menor preço"
+                - option "Maior preço"
+          - status [ref=e75]
+          - generic [ref=e76]:
+            - article [ref=e77]:
+              - 'link "Ver Emerald Ape #042" [ref=e78] [cursor=pointer]':
+                - /url: /nfts/emerald-ape
+                - img "Macaco com óculos redondos e jaqueta verde" [ref=e80]
+                - 'heading "Emerald Ape #042" [level=3] [ref=e81]'
+              - paragraph [ref=e82]: 1.19 ETH
+              - paragraph [ref=e83]: Ethereum
+              - paragraph [ref=e84]: 8 disponíveis
+            - article [ref=e85]:
+              - 'link "Ver Sage Nomad #009" [ref=e86] [cursor=pointer]':
+                - /url: /nfts/sage-nomad
+                - img "Macaco cinza com chapéu verde e moletom roxo" [ref=e88]
+                - 'heading "Sage Nomad #009" [level=3] [ref=e89]'
+              - paragraph [ref=e90]: 1.69 ETH
+              - paragraph [ref=e91]: Polygon
+              - paragraph [ref=e92]: 12 disponíveis
+            - article [ref=e93]:
+              - 'link "Ver Neon Vessel #552" [ref=e94] [cursor=pointer]':
+                - /url: /nfts/neon-vessel
+                - img "Macaco de pelo escuro com casaco claro" [ref=e96]
+                - 'heading "Neon Vessel #552" [level=3] [ref=e97]'
+              - paragraph [ref=e98]: 1.99 ETH
+              - paragraph [ref=e99]: Ethereum
+              - paragraph [ref=e100]: 5 disponíveis
+            - article [ref=e101]:
+              - 'link "Ver Golden Beat #207" [ref=e102] [cursor=pointer]':
+                - /url: /nfts/golden-beat
+                - img "Macaco dourado com fones verdes" [ref=e104]
+                - 'heading "Golden Beat #207" [level=3] [ref=e105]'
+              - paragraph [ref=e106]: 0.99 ETH
+              - paragraph [ref=e107]: Solana
+              - paragraph [ref=e108]: 20 disponíveis
+            - article [ref=e109]:
+              - 'link "Ver Cosmic Bloom #100" [ref=e110] [cursor=pointer]':
+                - /url: /nfts/cosmic-bloom
+                - img "Macaco com óculos redondos e jaqueta verde" [ref=e112]
+                - 'heading "Cosmic Bloom #100" [level=3] [ref=e113]'
+              - paragraph [ref=e114]: 1.29 ETH
+              - paragraph [ref=e115]: Ethereum
+              - paragraph [ref=e116]: Esgotado
+            - article [ref=e117]:
+              - 'link "Ver Violet Nomad #101" [ref=e118] [cursor=pointer]':
+                - /url: /nfts/violet-nomad
+                - img "Macaco cinza com chapéu verde e moletom roxo" [ref=e120]
+                - 'heading "Violet Nomad #101" [level=3] [ref=e121]'
+              - paragraph [ref=e122]: 1.39 ETH
+              - paragraph [ref=e123]: Polygon
+              - paragraph [ref=e124]: 2 disponíveis
+            - article [ref=e125]:
+              - 'link "Ver Ivory Baron #102" [ref=e126] [cursor=pointer]':
+                - /url: /nfts/ivory-baron
+                - img "Macaco de pelo escuro com casaco claro" [ref=e128]
+                - 'heading "Ivory Baron #102" [level=3] [ref=e129]'
+              - paragraph [ref=e130]: 1.79 ETH
+              - paragraph [ref=e131]: Solana
+              - paragraph [ref=e132]: 3 disponíveis
+            - article [ref=e133]:
+              - 'link "Ver Amber Signal #103" [ref=e134] [cursor=pointer]':
+                - /url: /nfts/amber-signal
+                - img "Macaco dourado com fones verdes" [ref=e136]
+                - 'heading "Amber Signal #103" [level=3] [ref=e137]'
+              - paragraph [ref=e138]: 0.39 ETH
+              - paragraph [ref=e139]: Ethereum
+              - paragraph [ref=e140]: 4 disponíveis
+            - article [ref=e141]:
+              - 'link "Ver Jade Echo #104" [ref=e142] [cursor=pointer]':
+                - /url: /nfts/jade-echo
+                - img "Macaco com óculos redondos e jaqueta verde" [ref=e144]
+                - 'heading "Jade Echo #104" [level=3] [ref=e145]'
+              - paragraph [ref=e146]: 0.02 ETH
+              - paragraph [ref=e147]: Polygon
+              - paragraph [ref=e148]: 5 disponíveis
+          - paragraph [ref=e149]: Página 1 de 3
+          - navigation "Paginação do catálogo" [ref=e150]:
+            - button "Anterior" [disabled]
+            - link "Página 1" [ref=e152] [cursor=pointer]:
+              - /url: /#catalogo
+              - text: "1"
+            - link "Página 2" [ref=e154] [cursor=pointer]:
+              - /url: /?page=2#catalogo
+              - text: "2"
+            - link "Página 3" [ref=e156] [cursor=pointer]:
+              - /url: /?page=3#catalogo
+              - text: "3"
+            - link "Próxima" [ref=e157] [cursor=pointer]:
+              - /url: /?page=2#catalogo
+  - contentinfo [ref=e158]:
+    - generic [ref=e159]:
+      - generic [ref=e160]:
+        - paragraph [ref=e161]: KURIO
+        - paragraph [ref=e162]: Feito para colecionadores,criadores e cultura.
+      - navigation "Links do rodapé" [ref=e163]:
+        - link "Explorar coleções" [ref=e164] [cursor=pointer]:
+          - /url: /
+        - link "Meu perfil" [ref=e165] [cursor=pointer]:
+          - /url: /account/profile
+        - link "Carteiras" [ref=e166] [cursor=pointer]:
+          - /url: /account/wallets
+      - generic [ref=e167]:
+        - paragraph [ref=e168]: Uma nova forma de colecionar.
+        - paragraph [ref=e169]: Demonstração em desenvolvimento. Compras e contas ainda não estão disponíveis.
+    - paragraph [ref=e170]: © 2026 Kurio · Jungle Gaming NFT Marketplace
+```
