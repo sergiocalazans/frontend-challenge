@@ -12,12 +12,12 @@ import { useCatalogRealtime } from './use-catalog-realtime'
 import { CatalogFilters } from './catalog-filters'
 import { CatalogPagination } from './catalog-pagination'
 import { CatalogSearchForm } from './catalog-search'
-import { sorts, validateCatalogSearch, type CatalogSearch, type CatalogSort } from './search'
+import { sorts, type CatalogSearch, type CatalogSort } from './search'
 
 const gridClass = 'grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-3 lg:gap-x-[34px]'
 
 export function CatalogPage() {
-  const search = validateCatalogSearch(useSearch({ strict: false }))
+  const search = useSearch({ from: '/' })
   const navigate = useNavigate()
   const query = useQuery(catalogOptions(search))
   useCatalogRealtime()

@@ -5,8 +5,6 @@ import { AppShell } from '@/components/layout/app-shell'
 import { CatalogPage } from '@/features/catalog/catalog-page'
 import { Button } from '@/components/ui/button'
 import { ErrorState } from '@/components/shared/async-state'
-import { RequireSession } from '@/features/auth/session'
-import { safeReturnTo } from '@/features/auth/contracts'
 
 function NotFoundPage() {
   return <section className="py-16 text-center"><p className="text-primary">404</p><h1 className="my-4 text-3xl font-semibold">Página não encontrada</h1><Button asChild><Link to="/">Voltar ao início</Link></Button></section>
@@ -19,14 +17,13 @@ const rootRoute = createRootRoute({ component: AppShell, notFoundComponent: NotF
 const home = createRoute({ getParentRoute: () => rootRoute, path: '/', validateSearch: validateCatalogSearch, component: CatalogPage })
 const designSystem = createRoute({ getParentRoute: () => rootRoute, path: '/design-system', component: lazyRouteComponent(() => import('@/features/design-system/design-system-page'), 'DesignSystemPage') })
 const cart = createRoute({ getParentRoute: () => rootRoute, path: '/cart', component: () => <PlannedPage title="Carrinho de NFTs" /> })
-const authSearch = (search: Record<string, unknown>): { returnTo?: string } => search.returnTo === undefined ? {} : { returnTo: safeReturnTo(search.returnTo) }
-const login = createRoute({ getParentRoute: () => rootRoute, path: '/login', validateSearch: authSearch, component: lazyRouteComponent(() => import('@/features/auth/auth-page'), 'AuthPage') })
-const register = createRoute({ getParentRoute: () => rootRoute, path: '/register', validateSearch: authSearch, component: lazyRouteComponent(() => import('@/features/auth/register-page'), 'RegisterPage') })
-const profile = createRoute({ getParentRoute: () => rootRoute, path: '/account/profile', component: () => <RequireSession><AccountLayout><PlannedPage title="Perfil do colecionador" /></AccountLayout></RequireSession> })
-const wallets = createRoute({ getParentRoute: () => rootRoute, path: '/account/wallets', component: () => <RequireSession><AccountLayout><PlannedPage title="Carteiras" /></AccountLayout></RequireSession> })
+const login = createRoute({ getParentRoute: () => rootRoute, path: '/login', component: () => <PlannedPage title="Entrar na Kurio" /> })
+const register = createRoute({ getParentRoute: () => rootRoute, path: '/register', component: () => <PlannedPage title="Criar perfil" /> })
+const profile = createRoute({ getParentRoute: () => rootRoute, path: '/account/profile', component: () => <AccountLayout><PlannedPage title="Perfil do colecionador" /></AccountLayout> })
+const wallets = createRoute({ getParentRoute: () => rootRoute, path: '/account/wallets', component: () => <AccountLayout><PlannedPage title="Carteiras" /></AccountLayout> })
 const nft = createRoute({ getParentRoute: () => rootRoute, path: '/nfts/$nftId', component: () => <PlannedPage title="Detalhes do NFT" /> })
-const checkout = createRoute({ getParentRoute: () => rootRoute, path: '/checkout', component: () => <RequireSession><PlannedPage title="Pagamento" /></RequireSession> })
-const order = createRoute({ getParentRoute: () => rootRoute, path: '/orders/$orderId', component: () => <RequireSession><PlannedPage title="Pedido" /></RequireSession> })
+const checkout = createRoute({ getParentRoute: () => rootRoute, path: '/checkout', component: () => <PlannedPage title="Pagamento" /> })
+const order = createRoute({ getParentRoute: () => rootRoute, path: '/orders/$orderId', component: () => <PlannedPage title="Pedido" /> })
 
 export const router = createRouter({ routeTree: rootRoute.addChildren([home, designSystem, cart, login, register, profile, wallets, nft, checkout, order]), parseSearch: parseUrlSearch, stringifySearch: stringifyUrlSearch, defaultPreload: 'intent', scrollRestoration: true })
 declare module '@tanstack/react-router' { interface Register { router: typeof router } }
