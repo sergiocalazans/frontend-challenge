@@ -138,5 +138,6 @@ test('Socket.IO reconciles prices against active filters and NFT links navigate'
   await expect(page.getByTestId('nft-emerald-ape')).toContainText('1.29 ETH')
   await page.getByRole('link', { name: 'Ver Emerald Ape #042' }).click()
   await expect(page).toHaveURL('/nfts/emerald-ape')
-  await expect(page.getByRole('heading', { name: 'Detalhes do NFT' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Emerald Ape #042', exact: true })).toBeVisible()
+  await expect(page.getByTestId('detail-price')).toHaveText('1.29 ETH')
 })
