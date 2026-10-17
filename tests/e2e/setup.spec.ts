@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { loginViaApi } from './auth-helpers'
 
 test('catalog loads through MSW and restores search after refresh', async ({ page }) => {
   await page.goto('/')
@@ -71,6 +72,7 @@ test('real Socket.IO event reconciles updated REST data', async ({ page }) => {
 })
 
 test('routes are honest about pending flows and handle unknown URLs', async ({ page }) => {
+  await loginViaApi(page)
   await page.goto('/checkout')
   await expect(page.getByRole('heading', { name: 'Pagamento' })).toBeVisible()
   await expect(page.getByText('Em desenvolvimento', { exact: true })).toBeVisible()
