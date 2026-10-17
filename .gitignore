@@ -6,3 +6,8 @@ playwright-report/
 test-results/
 .lighthouseci/
 *.log
+reports/
+coverage/
+.tmp/
+.tmp-*.json
+*.tsbuildinfo
