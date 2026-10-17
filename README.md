@@ -75,3 +75,7 @@ Lighthouse inicia outro preview em 4175, utiliza o Chromium do Playwright e gera
 ## Publicação
 
 Esta etapa não realiza deploy. Um futuro host estático deve servir `dist/`, permitir Service Workers e redirecionar rotas da SPA para `index.html`. O PR tem destino `develop`; merge e publicação dependem de autorização.
+
+## Biblioteca de interface
+
+Acesse `/design-system` para explorar componentes, validação, layouts e estados de rede. `/account/profile` e `/account/wallets` demonstram a navegação do layout de conta; edição e sessão continuam pendentes. Consulte [guia do design system](docs/DESIGN_SYSTEM.md) e [validação desta feature](docs/DESIGN_SYSTEM_VALIDATION.md) para contratos de componentes, decisões baseadas nos SVGs e evidências.
