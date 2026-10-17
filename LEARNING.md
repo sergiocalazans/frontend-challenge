@@ -99,12 +99,3 @@ Revise o código e execute os exemplos antes de defender a solução. O candidat
    - O catálogo implementa os 12 grupos completos? Não. Cobre o grupo 1 e amplia os grupos 11/12 e atualização de catálogo; conta, checkout e detalhe permanecem features próprias.
 
 **Execução de E2E:** após timeouts de bootstrap em rodadas com dois workers, o runner foi limitado a um processo de teste concorrente. Os casos, timeouts e baselines permanecem iguais; concorrência de requisições continua coberta dentro do teste. Isso é uma decisão de orçamento de execução, não uma garantia de que a causa de toda intermitência foi eliminada.
-# Feature: login, cadastro e sessão (17/10/2026)
-
-1. **Implementação:** login/cadastro por REST simulado, recuperação após refresh, logout, expiração, retorno ao contexto e proteção de rotas. Modais desktop e páginas mobile com erros por campo e feedback de envio.
-2. **Arquivos principais:** `features/auth`, `mocks/auth.ts`, `lib/http.ts`, `app/router.tsx`, `components/layout/app-shell.tsx`, testes `auth.test.ts` e `auth.spec.ts`.
-3. **Fluxo:** formulário valida → mutation envia Axios → MSW valida e compara hash → token opaco e usuário retornam → sessão entra no Query cache → Router retoma o destino local. 401 da sessão atual limpa token/cache privado e o guard preserva o destino no login.
-4. **Tecnologias:** TanStack Query/Router, Axios, MSW, Web Crypto PBKDF2, localStorage e Radix Dialog, além de React/TypeScript e Playwright.
-5. **Decisões:** token opaco por 30 minutos; hash com salt, sem senha em claro; cache privado com prefixo `private` e userId; não repetir mutations automaticamente; retorno somente local; login social sem contrato informado como indisponível. A simulação local não oferece segurança de backend real.
-6. **Como testar:** duas credenciais fictícias em `docs/AUTHENTICATION.md`; login direto em rota privada, refresh, sair/trocar usuário, cadastrar e repetir e-mail, provocar `expire`, `slow` e `error`. Executar unitários e E2E.
-7. **Defesa:** Por que localStorage não equivale a cookie HttpOnly? Como PBKDF2 difere de guardar senha? Por que cancelar consultas antes da troca de identidade? Por que 503 não deve significar sessão anônima? Como um 401 atrasado pode afetar uma sessão nova? Como retomar checkout sem fingir uma compra? Por que subscriptions privadas futuras precisam de cleanup próprio?

@@ -1,10 +1,8 @@
 import { listNfts } from './catalog'
-import { authHandlers } from './auth'
 import { delay, http, HttpResponse } from 'msw'
 import { listeners, mockState, resetMocks, scenarios, type Scenario } from './state'
 
 export const handlers = [
-  ...authHandlers,
   http.get('*/api/nfts', async ({ request }) => {
     const scenario = mockState.scenario
     const params = new URL(request.url).searchParams
