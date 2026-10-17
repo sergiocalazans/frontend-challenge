@@ -1,6 +1,6 @@
 # Detalhes, edições e favoritos
 
-Branch `feature/nft-details`, criada de `develop` atualizado em `4d87a9d`, com working tree limpo. Independente de `feature/authentication`, conforme escolha do usuário. “Edição” significa tiragem/variante da obra mostrada nos SVGs, não alteração dos metadados do NFT.
+Histórico: `feature/nft-details` partiu de `develop` em `4d87a9d`, com working tree limpo e PR independente. O PR #5 foi integrado externamente; autenticação e favoritos agora são integrados nesta branch sobre `5db74c5`. “Edição” significa tiragem/variante da obra mostrada nos SVGs, não alteração dos metadados do NFT.
 
 ## Contratos e dados
 
@@ -34,13 +34,13 @@ Chave `['private',userId,'favorites']`; GET recebe token opaco no header Authori
 
 Favoritos persistem por userId em `kurio.mock-favorites.v1`, no localStorage. Sessão é resolvida pelo contrato persistido `kurio.mock-auth.v1`, com token em `kurio.session-token`, prazo e usuário. A mutation revalida sessão também depois da latência, antes da escrita. Mutation atrasada da identidade anterior não recria cache; 401 limpa token/cache privado e a UI volta ao visitante. Storage events limpam dados privados ao trocar token em outra aba. Não há subscription privada nesta feature.
 
-Sem sessão, Favoritar navega para `/login?returnTo=...` com edição e quantidade preservadas. Login ainda é placeholder nesta branch independente. O PR de autenticação implementa esse destino; **o fluxo integrado login → retorno → favorito não foi validado nem declarado pronto antes dos merges**.
+Sem sessão, Favoritar navega para `/login?returnTo=...` com edição e quantidade preservadas. O formulário de login restaura a sessão e retorna ao NFT. O visitante confirma a ação Favoritar depois de entrar; não há escrita automática apenas por visitar o link. O E2E integrado cobre retorno, persistência e troca de usuário.
 
-### Integração pendente com autenticação
+### Integração com autenticação
 
-`detail-session-bridge.ts` só resolve o contrato de sessão persistido e oferece fixture de teste. Não implementa login/cadastro. O [PR de autenticação #4](https://github.com/sergiocalazans/frontend-challenge/pull/4) implementa esse fluxo. O fallback GET `/session` deve ficar **depois** de `authHandlers` na lista MSW ao integrar ambos os PRs; o handler de autenticação passa a responder em primeiro lugar. Ambos usam a mesma chave/formato de sessão, token e IDs de fixture. Campos hash/salt são preservados ao criar fixtures; senhas não são armazenadas em claro.
+A integração utiliza `src/mocks/session-store.ts` como armazenamento único de contas e sessões para login, cadastro e favoritos, inclusive no MSW Node. O fallback de sessão foi removido. O detalhe usa `useSession` e `SessionLifecycle` compartilhados; Axios trata 401 somente se o token da requisição ainda for atual. As fixtures `/demo/details/session` continuam disponíveis para testes isolados, mas o E2E integrado usa o formulário real.
 
-Os PRs alteram `src/app/router.tsx`, `src/mocks/handlers.ts`, `src/components/layout/app-shell.tsx` e documentação. A integração deverá combinar rotas/handlers de ambos, manter proteções da autenticação e as condições visuais de auth/detail no shell, depois executar testes completos e um E2E de login real seguido de favorito. Não houve merge automático para antecipar essa etapa. Endpoints `/demo` são controles locais de simulação, não autenticação de produção.
+As rotas e handlers de autenticação foram restaurados sobre develop após o revert #6. O shell preserva a composição mobile de detalhes e autenticação. Consulte [validação integrada](AUTHENTICATION_INTEGRATION.md). Endpoints `/demo` são controles de simulação, não autenticação de produção.
 
 ## Tempo real
 
@@ -54,4 +54,4 @@ Arquivos: `features/nft-details/{contracts,api,detail-page,gallery,favorite-butt
 
 ## Como testar
 
-`npm run dev`, abrir `/nfts/emerald-ape?edition=fifty&quantity=4`; testar galeria, esgotada ABERTA, quantidade e `/nfts/unknown`. Para a sessão de fixture nesta branch, POST `/api/demo/details/session` com `{userId:'ana'}`, salve o token retornado em `kurio.session-token` e recarregue. Faça o mesmo com `bruno` para observar isolamento. Isso prepara o contrato no ambiente de demonstração; não substitui teste de login real após integrar autenticação. POST `fail-next` avalia rollback. Cenários `slow`, `error`, `offline` seguem `/api/demo/scenario`; navegue por links sem reload, pois bootstrap restaura o cenário configurado. Reset restaura favoritos/sessões e invalida tokens antigos.
+`npm run dev`, abrir `/nfts/emerald-ape?edition=fifty&quantity=4`; testar galeria, esgotada ABERTA, quantidade e `/nfts/unknown`. Para a sessão de fixture nesta branch, POST `/api/demo/details/session` com `{userId:'ana'}`, salve o token retornado em `kurio.session-token` e recarregue. Faça o mesmo com `bruno` para observar isolamento. O teste de login real seguido de favorito está em `auth.spec.ts`. POST `fail-next` avalia rollback. Cenários `slow`, `error`, `offline` seguem `/api/demo/scenario`; navegue por links sem reload, pois bootstrap restaura o cenário configurado. Reset restaura favoritos/sessões e invalida tokens antigos.

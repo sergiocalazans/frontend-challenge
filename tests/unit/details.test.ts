@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { beforeEach, expect, test } from 'vitest'
 import { resetDetails } from '@/mocks/details'
-import { seedDetailSessions } from '@/mocks/detail-session-bridge'
+import { seedDetailSessions } from '@/mocks/session-store'
 import type { NftDetail } from '@/features/nft-details/contracts'
 import { validateDetailSearch } from '@/features/nft-details/contracts'
 const api = axios.create({ baseURL: 'http://localhost/api', adapter: 'http' })

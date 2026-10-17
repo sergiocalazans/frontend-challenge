@@ -1,8 +1,6 @@
 import type { Nft } from '@/features/catalog/contracts'
 export interface Edition { id: string; label: string; available: number }
 export interface NftDetail extends Nft { description: string; collection: string; attributes: string[]; editions: Edition[]; related: Nft[] }
-export interface SessionIdentity { id: string; name: string; email: string }
-export interface DetailSession { user: SessionIdentity | null }
 export interface Favorites { ids: string[] }
 export interface DetailSearch { edition?: string; quantity?: number }
 export function validateDetailSearch(raw: Record<string, unknown>): DetailSearch {

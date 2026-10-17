@@ -10,7 +10,8 @@ import { NftCard } from '@/components/shared/nft-card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { createMarketSocket, subscribeToCatalog } from '@/lib/realtime'
 import { errorMessage } from '@/lib/http'
-import { detailOptions, detailSessionOptions } from './api'
+import { useSession } from '@/features/auth/api'
+import { detailOptions } from './api'
 import { validateDetailSearch } from './contracts'
 import { NftGallery } from './gallery'
 import { FavoriteButton } from './favorite-button'
@@ -21,7 +22,7 @@ export function NftDetailPage() {
   const navigate = useNavigate()
   const client = useQueryClient()
   const query = useQuery(detailOptions(nftId))
-  const session = useQuery(detailSessionOptions())
+  const session = useSession()
   const identity = session.data?.user?.id
   const [connected, setConnected] = useState(false)
   useEffect(() => {
@@ -33,15 +34,6 @@ export function NftDetailPage() {
     const dispose = subscribeToCatalog(socket, () => { void client.invalidateQueries({ queryKey: ['nft-detail', nftId] }); void client.invalidateQueries({ queryKey: ['catalog'] }) })
     return () => { socket.off('connect', connect); socket.off('disconnect', disconnect); dispose() }
   }, [client, nftId])
-  useEffect(() => {
-    const clear = () => { void client.cancelQueries({ queryKey: ['private'] }); client.removeQueries({ queryKey: ['private'] }); client.setQueryData(['session'], { user: null }) }
-    const changed = (event: StorageEvent) => { if (event.key === 'kurio.session-token') {
-      void client.cancelQueries({ queryKey: ['session'] }); void client.cancelQueries({ queryKey: ['private'] }); client.removeQueries({ queryKey: ['private'] }); client.setQueryData(['session'], { user: null }); void client.invalidateQueries({ queryKey: ['session'] })
-    } }
-    window.addEventListener('storage', changed)
-    window.addEventListener('kurio:unauthorized', clear)
-    return () => { window.removeEventListener('storage', changed); window.removeEventListener('kurio:unauthorized', clear) }
-  }, [client])
   if (query.isPending) return <DetailSkeleton />
   if (axios.isAxiosError(query.error) && query.error.response?.status === 404) return <EmptyState title="NFT não encontrado"><p>Esta obra não está disponível no catálogo.</p><Button className="mt-4" asChild><Link to="/">Voltar à coleção</Link></Button></EmptyState>
   if (!query.data) return <ErrorState message={errorMessage(query.error)} onRetry={() => void query.refetch()} />
