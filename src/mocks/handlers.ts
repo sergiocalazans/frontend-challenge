@@ -1,8 +1,11 @@
 import { listNfts } from './catalog'
+import { detailHandlers, detailSessionFallback } from './details'
 import { delay, http, HttpResponse } from 'msw'
 import { listeners, mockState, resetMocks, scenarios, type Scenario } from './state'
 
 export const handlers = [
+  ...detailHandlers,
+  detailSessionFallback,
   http.get('*/api/nfts', async ({ request }) => {
     const scenario = mockState.scenario
     const params = new URL(request.url).searchParams
@@ -27,10 +30,15 @@ export const handlers = [
     for (const nft of mockState.items) nft.version = (versions.get(nft.id) ?? 0) + 1
     return HttpResponse.json({ scenario: mockState.scenario })
   }),
-  http.post('*/api/demo/nfts/:id/update', ({ params }) => {
+  http.post('*/api/demo/nfts/:id/update', async ({ params, request }) => {
     const nft = mockState.items.find(item => item.id === params.id)
     if (!nft) return HttpResponse.json({ code: 'NOT_FOUND' }, { status: 404 })
-    nft.priceEth = nft.priceEth === '1.19' ? '1.29' : '1.19'
+    let body: unknown
+    try { const text = await request.text(); body = text ? JSON.parse(text) : {} } catch { return HttpResponse.json({ code: 'INVALID_BODY' }, { status: 400 }) }
+    if (body && typeof body === 'object' && 'available' in body) {
+      if (typeof body.available !== 'number' || !Number.isInteger(body.available) || body.available < 0 || body.available > 10000) return HttpResponse.json({ code: 'INVALID_AVAILABILITY' }, { status: 422 })
+      nft.available = body.available
+    } else nft.priceEth = nft.priceEth === '1.19' ? '1.29' : '1.19'
     nft.version += 1
     const event = { eventId: `${nft.id}:${nft.version}`, nftId: nft.id, version: nft.version }
     listeners.forEach(emit => emit(event))
