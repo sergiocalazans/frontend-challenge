@@ -1,0 +1,135 @@
+{
+  "date": "2026-10-17T22:06:02.683Z",
+  "node": "v22.18.0",
+  "platform": "win32",
+  "url": "/",
+  "scope": "Initial shell, not the full challenge audit",
+  "results": [
+    {
+      "profile": "mobile",
+      "run": 1,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 66,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 3026.684,
+        "cumulative-layout-shift": 0,
+        "total-blocking-time": 1814.348
+      }
+    },
+    {
+      "profile": "mobile",
+      "run": 2,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 92,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 2358.014,
+        "cumulative-layout-shift": 0,
+        "total-blocking-time": 276.5
+      }
+    },
+    {
+      "profile": "mobile",
+      "run": 3,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 89,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 2334.1900000000005,
+        "cumulative-layout-shift": 0,
+        "total-blocking-time": 378
+      }
+    },
+    {
+      "profile": "desktop",
+      "run": 1,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 810.53,
+        "cumulative-layout-shift": 0.0000930916732335172,
+        "total-blocking-time": 51
+      }
+    },
+    {
+      "profile": "desktop",
+      "run": 2,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 99,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 733.9989999999999,
+        "cumulative-layout-shift": 0.0000930916732335172,
+        "total-blocking-time": 75
+      }
+    },
+    {
+      "profile": "desktop",
+      "run": 3,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 659.6274999999999,
+        "cumulative-layout-shift": 0.0000930916732335172,
+        "total-blocking-time": 37
+      }
+    }
+  ],
+  "medians": [
+    {
+      "profile": "mobile",
+      "scores": {
+        "performance": 89,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 2358.014,
+        "cumulative-layout-shift": 0,
+        "total-blocking-time": 378
+      }
+    },
+    {
+      "profile": "desktop",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 733.9989999999999,
+        "cumulative-layout-shift": 0.0000930916732335172,
+        "total-blocking-time": 51
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@ Base inicial do desafio frontend. A marca **KURIO** foi preservada dos SVGs; o n
 
 Vite + React + TypeScript strict, TanStack Router/Query, Axios, Tailwind v4, componentes shadcn/ui adaptados, MSW, cliente Socket.IO real, Playwright, Vitest e infraestrutura Lighthouse. Há um catálogo de demonstração com quatro imagens originais e busca na URL, além de `/design-system` para experimentar os componentes, estados HTTP e eventos.
 
-**Não é a entrega completa do desafio.** Compra, sessão, cadastro, perfil, manutenção de carteiras, favoritos, pedidos e detalhes têm rotas de preparação claramente identificadas. Não existem credenciais de login nesta etapa, contas reais, cobrança nem integração blockchain. As quatro obras são fixtures de demonstração.
+**Não é a entrega completa do desafio.** Login, cadastro, sessão, catálogo, detalhes e favoritos estão implementados com mocks. Compra, edição de perfil, manutenção de carteiras e pedidos permanecem em desenvolvimento. Não há contas reais, cobrança ou integração blockchain.
 
 ## Executar
 
@@ -78,15 +78,19 @@ Esta etapa não realiza deploy. Um futuro host estático deve servir `dist/`, pe
 
 ## Biblioteca de interface
 
-Acesse `/design-system` para explorar componentes, validação, layouts e estados de rede. `/account/profile` e `/account/wallets` demonstram a navegação do layout de conta; edição e sessão continuam pendentes. Consulte [guia do design system](docs/DESIGN_SYSTEM.md) e [validação desta feature](docs/DESIGN_SYSTEM_VALIDATION.md) para contratos de componentes, decisões baseadas nos SVGs e evidências.
+Acesse `/design-system` para explorar componentes, validação, layouts e estados de rede. `/account/profile` e `/account/wallets` demonstram a navegação do layout de conta; a edição continua pendente; acesso exige sessão. Consulte [guia do design system](docs/DESIGN_SYSTEM.md) e [validação desta feature](docs/DESIGN_SYSTEM_VALIDATION.md) para contratos de componentes, decisões baseadas nos SVGs e evidências.
 
 ## Catálogo funcional
 
-O início permite buscar por nome, combinar categoria/rede/faixa ETH, ordenar e paginar. A URL preserva essa combinação no refresh e no histórico. Existem 24 NFTs simulados, com nove itens por página e quatro imagens locais reutilizadas. Os cards navegam para a rota de detalhe, cujo fluxo ainda está pendente.
+O início permite buscar por nome, combinar categoria/rede/faixa ETH, ordenar e paginar. A URL preserva essa combinação no refresh e no histórico. Existem 24 NFTs simulados, com nove itens por página e quatro imagens locais reutilizadas. Os cards navegam para a rota de detalhe, com galeria, edições, quantidade e favoritos.
 
 No laboratório, os cenários adicionais `race`, `offline` e `flaky` exercitam respostas fora de ordem, falha de conexão e recuperação. Selecione um cenário e volte ao início pelos links internos; refresh reinicia o cenário configurado em `VITE_MOCK_SCENARIO`. `race` atrasa a busca exata Emerald; `flaky` falha nas duas primeiras consultas do cenário. Consulte [guia do catálogo](docs/CATALOG.md) e [resultados desta feature](docs/CATALOG_VALIDATION.md).
 
 O Playwright usa um worker por padrão para reduzir contenção entre processos Chromium. Os testes de concorrência continuam disparando requisições sobrepostas no navegador, sem alteração de timeout ou retries para esconder falhas.
 # Detalhes e favoritos
 
-Abra `/nfts/emerald-ape`; edições e quantidade podem ser preservadas por `?edition=fifty&quantity=4`. Galeria, estoque e favoritos usam REST/MSW; eventos de preço/estoque passam pelo Socket.IO real. Esta branch é independente do PR de autenticação: consulte [contrato de sessão, fixtures e limites de integração](docs/NFT_DETAILS.md). Comprar encaminha a seleção ao carrinho ainda em desenvolvimento. `npm run audit:lighthouse` agora mede início e detalhe, três vezes por perfil.
+Abra `/nfts/emerald-ape`; edições e quantidade podem ser preservadas por `?edition=fifty&quantity=4`. Galeria, estoque e favoritos usam REST/MSW; eventos de preço/estoque passam pelo Socket.IO real. Login e favoritos usam a mesma sessão: consulte [contrato de sessão, fixtures e limites de integração](docs/NFT_DETAILS.md). Comprar encaminha a seleção ao carrinho ainda em desenvolvimento. `npm run audit:lighthouse` agora mede início e detalhe, três vezes por perfil.
+
+## Autenticação integrada
+
+Credenciais fictícias: `ana@example.com` ou `bruno@example.com`, senha `Collector123!`. `/register` permite criar conta local; apenas hash PBKDF2 e salt são persistidos nos mocks. Sessão dura 30 minutos, sobrevive a refresh e pode ser encerrada em Sair. No detalhe, Favoritar como visitante abre login preservando edição/quantidade; após entrar, confirme Favoritar. Trocar usuário limpa cache privado. `POST /api/demo/auth` com `{ "action": "reset" }` restaura contas/sessões; `/api/demo/details/reset` também limpa favoritos. Relatórios e limites: [autenticação integrada](docs/AUTHENTICATION_INTEGRATION.md).
