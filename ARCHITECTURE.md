@@ -60,3 +60,9 @@ Vitest integra REST/MSW e Socket.IO; Playwright usa o build de demonstração e 
 No Vitest, um alias carrega a distribuição de navegador real de `socket.io-client`. O transporte padrão do pacote em Node usa `ws`, que não passa pelo WebSocket global interceptado pelo MSW. Não se substituem eventos ou callbacks por mocks do cliente. Referência: [limitação do transporte Node no binding](https://github.com/mswjs/socket.io-binding/issues/15).
 
 As próximas features devem implementar contratos de sessão, catálogo completo, favoritos, carrinho/cotação, checkout/pedidos, perfil e carteiras, com seus estados e documentação. Os 12 grupos E2E e os relatórios finais de performance ainda não estão completos. Evidências da etapa: [docs/VALIDATION.md](docs/VALIDATION.md).
+
+## Evolução: tokens, componentes e layouts
+
+A base visual agora separa tokens de regras globais e oferece composições de conta/compra, FormField, drawer e skeletons específicos. Os contratos, fontes dos valores e limites estão em [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md). As rotas de perfil e carteiras compartilham a sidebar; seu conteúdo ainda é de preparação e não expõe dados privados. A composição de compra é demonstrada no laboratório, sem cotação ou pedido inventado. Resultados incrementais em [docs/DESIGN_SYSTEM_VALIDATION.md](docs/DESIGN_SYSTEM_VALIDATION.md).
+
+A rota do laboratório é carregada sob demanda por `lazyRouteComponent`; a primeira visita baixa seu chunk separado. Isso retirou cerca de 70 kB do chunk principal nesta feature. A divisão não altera a ativação do MSW nem fornece um caminho especial de auditoria.
