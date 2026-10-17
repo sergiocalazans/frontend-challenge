@@ -1,3 +1,4 @@
+import { parseUrlSearch, stringifyUrlSearch, validateCatalogSearch } from '@/features/catalog/search'
 import { createRootRoute, createRoute, createRouter, lazyRouteComponent, Link } from '@tanstack/react-router'
 import { AccountLayout } from '@/components/layout/page-layouts'
 import { AppShell } from '@/components/layout/app-shell'
@@ -13,7 +14,7 @@ function PlannedPage({ title }: { title: string }) {
 }
 
 const rootRoute = createRootRoute({ component: AppShell, notFoundComponent: NotFoundPage, errorComponent: ({ reset }) => <ErrorState message="Não foi possível abrir esta página." onRetry={reset} /> })
-const home = createRoute({ getParentRoute: () => rootRoute, path: '/', validateSearch: (search: Record<string, unknown>): { q?: string } => ({ q: typeof search.q === 'string' ? search.q.slice(0, 120) : undefined }), component: CatalogPage })
+const home = createRoute({ getParentRoute: () => rootRoute, path: '/', validateSearch: validateCatalogSearch, component: CatalogPage })
 const designSystem = createRoute({ getParentRoute: () => rootRoute, path: '/design-system', component: lazyRouteComponent(() => import('@/features/design-system/design-system-page'), 'DesignSystemPage') })
 const cart = createRoute({ getParentRoute: () => rootRoute, path: '/cart', component: () => <PlannedPage title="Carrinho de NFTs" /> })
 const login = createRoute({ getParentRoute: () => rootRoute, path: '/login', component: () => <PlannedPage title="Entrar na Kurio" /> })
@@ -24,5 +25,5 @@ const nft = createRoute({ getParentRoute: () => rootRoute, path: '/nfts/$nftId',
 const checkout = createRoute({ getParentRoute: () => rootRoute, path: '/checkout', component: () => <PlannedPage title="Pagamento" /> })
 const order = createRoute({ getParentRoute: () => rootRoute, path: '/orders/$orderId', component: () => <PlannedPage title="Pedido" /> })
 
-export const router = createRouter({ routeTree: rootRoute.addChildren([home, designSystem, cart, login, register, profile, wallets, nft, checkout, order]), defaultPreload: 'intent', scrollRestoration: true })
+export const router = createRouter({ routeTree: rootRoute.addChildren([home, designSystem, cart, login, register, profile, wallets, nft, checkout, order]), parseSearch: parseUrlSearch, stringifySearch: stringifyUrlSearch, defaultPreload: 'intent', scrollRestoration: true })
 declare module '@tanstack/react-router' { interface Register { router: typeof router } }
