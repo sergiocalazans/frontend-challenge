@@ -1,7 +1,7 @@
 import { delay, http, HttpResponse } from 'msw'
 import type { NftDetail } from '@/features/nft-details/contracts'
 import { mockState } from './state'
-import { expireDetailSessions, fixtureSession, readSessionStore, resolveDetailSession, seedDetailSessions } from './detail-session-bridge'
+import { expireDetailSessions, fixtureSession, readSessionStore, resolveDetailSession, seedDetailSessions } from './session-store'
 
 let favorites: Record<string, string[]> = {}
 let failFavorite = false
@@ -68,8 +68,3 @@ export const detailHandlers = [
     return result ? HttpResponse.json(result) : HttpResponse.json({ code: 'INVALID_USER' }, { status: 400 })
   }),
 ]
-// Place after authentication handlers when both independent PRs are integrated.
-export const detailSessionFallback = http.get('*/api/session', ({ request }) => {
-  const user = resolveDetailSession(request)
-  return request.headers.has('Authorization') && !user ? unauthorized() : HttpResponse.json({ user })
-})
