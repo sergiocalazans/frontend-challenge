@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { loginViaApi } from './auth-helpers'
 
 test('field associates help and errors, then accepts a valid value', async ({ page }) => {
   await page.goto('/design-system')
@@ -42,6 +43,7 @@ test('loading structures respect reduced motion and expose one label each', asyn
 })
 
 test('account layout supports direct routes, navigation and narrow content', async ({ page }) => {
+  await loginViaApi(page)
   await page.goto('/account/profile')
   const nav = page.getByRole('navigation', { name: 'Navegação da conta' })
   await expect(nav.getByRole('link', { name: 'Dados do perfil' })).toHaveAttribute('aria-current', 'page')
@@ -57,6 +59,7 @@ test('account layout supports direct routes, navigation and narrow content', asy
 })
 
 test('@visual account composition', async ({ page }) => {
+  await loginViaApi(page)
   await page.goto('/account/profile')
   await page.evaluate(() => document.fonts.ready)
   await expect(page).toHaveScreenshot('account-layout.png', { fullPage: true, animations: 'disabled' })

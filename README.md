@@ -87,3 +87,6 @@ O início permite buscar por nome, combinar categoria/rede/faixa ETH, ordenar e 
 No laboratório, os cenários adicionais `race`, `offline` e `flaky` exercitam respostas fora de ordem, falha de conexão e recuperação. Selecione um cenário e volte ao início pelos links internos; refresh reinicia o cenário configurado em `VITE_MOCK_SCENARIO`. `race` atrasa a busca exata Emerald; `flaky` falha nas duas primeiras consultas do cenário. Consulte [guia do catálogo](docs/CATALOG.md) e [resultados desta feature](docs/CATALOG_VALIDATION.md).
 
 O Playwright usa um worker por padrão para reduzir contenção entre processos Chromium. Os testes de concorrência continuam disparando requisições sobrepostas no navegador, sem alteração de timeout ou retries para esconder falhas.
+# Autenticação da demonstração
+
+Login e cadastro disponíveis em `/login` e `/register`. Use `ana@example.com` ou `bruno@example.com`, senha fictícia `Collector123!`. Use somente dados fictícios ao cadastrar. Sessão dura 30 minutos e persiste após refresh. [Contratos, cenários de expiração/erro e política de cache](docs/AUTHENTICATION.md). Perfil, carteiras e checkout continuam com seus conteúdos em desenvolvimento, agora protegidos por sessão.
