@@ -1,4 +1,5 @@
 import { createRootRoute, createRoute, createRouter, Link } from '@tanstack/react-router'
+import { AccountLayout } from '@/components/layout/page-layouts'
 import { AppShell } from '@/components/layout/app-shell'
 import { CatalogPage } from '@/features/catalog/catalog-page'
 import { DesignSystemPage } from '@/features/design-system/design-system-page'
@@ -18,8 +19,8 @@ const designSystem = createRoute({ getParentRoute: () => rootRoute, path: '/desi
 const cart = createRoute({ getParentRoute: () => rootRoute, path: '/cart', component: () => <PlannedPage title="Carrinho de NFTs" /> })
 const login = createRoute({ getParentRoute: () => rootRoute, path: '/login', component: () => <PlannedPage title="Entrar na Kurio" /> })
 const register = createRoute({ getParentRoute: () => rootRoute, path: '/register', component: () => <PlannedPage title="Criar perfil" /> })
-const profile = createRoute({ getParentRoute: () => rootRoute, path: '/account/profile', component: () => <PlannedPage title="Perfil do colecionador" /> })
-const wallets = createRoute({ getParentRoute: () => rootRoute, path: '/account/wallets', component: () => <PlannedPage title="Carteiras" /> })
+const profile = createRoute({ getParentRoute: () => rootRoute, path: '/account/profile', component: () => <AccountLayout><PlannedPage title="Perfil do colecionador" /></AccountLayout> })
+const wallets = createRoute({ getParentRoute: () => rootRoute, path: '/account/wallets', component: () => <AccountLayout><PlannedPage title="Carteiras" /></AccountLayout> })
 const nft = createRoute({ getParentRoute: () => rootRoute, path: '/nfts/$nftId', component: () => <PlannedPage title="Detalhes do NFT" /> })
 const checkout = createRoute({ getParentRoute: () => rootRoute, path: '/checkout', component: () => <PlannedPage title="Pagamento" /> })
 const order = createRoute({ getParentRoute: () => rootRoute, path: '/orders/$orderId', component: () => <PlannedPage title="Pedido" /> })

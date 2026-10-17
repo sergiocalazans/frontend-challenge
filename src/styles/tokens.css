@@ -1,0 +1,49 @@
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--background);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: var(--secondary);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--secondary);
+  --color-accent-foreground: var(--foreground);
+  --color-price: var(--price);
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--primary);
+  --color-destructive: var(--destructive);
+  --radius-sm: 3px;
+  --radius-md: 5px;
+  --radius-lg: 6px;
+  --radius-xl: 15px;
+  --font-mono: "IBM Plex Mono", monospace;
+  --font-sans: "IBM Plex Mono", monospace;
+}
+
+:root {
+  color-scheme: dark;
+  --background: #140D0A;
+  --foreground: #F5F1EB;
+  --card: #241612;
+  --primary: #D28A4C;
+  --secondary: #2F1D15;
+  --muted-foreground: #CFB28C;
+  --border: #3F2319;
+  --radius: 6px;
+  --price: #E89B55;
+  --destructive: #F0805F;
+  --layout-max: 1200px;
+  --layout-gutter: 24px;
+  --layout-sidebar: 310px;
+  --layout-account-gap: 28px;
+  --layout-summary: 405px;
+  --text-muted-original: #B39463;
+  --surface-band: #38220F;
+  --border-accent-muted: #55321F;
+}
