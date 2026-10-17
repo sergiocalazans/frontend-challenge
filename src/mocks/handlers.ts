@@ -1,13 +1,20 @@
+import { listNfts } from './catalog'
 import { delay, http, HttpResponse } from 'msw'
 import { listeners, mockState, resetMocks, scenarios, type Scenario } from './state'
 
 export const handlers = [
   http.get('*/api/nfts', async ({ request }) => {
     const scenario = mockState.scenario
-    await delay(scenario === 'slow' ? 1800 : 150)
-    if (scenario === 'error') return HttpResponse.json({ code: 'UNAVAILABLE' }, { status: 503 })
-    const q = new URL(request.url).searchParams.get('q')?.toLocaleLowerCase('pt-BR') ?? ''
-    return HttpResponse.json({ items: scenario === 'empty' ? [] : mockState.items.filter(nft => nft.name.toLocaleLowerCase('pt-BR').includes(q)) })
+    const params = new URL(request.url).searchParams
+    // Capture the response before waiting: the slow request represents an older snapshot.
+    const result = listNfts(scenario === 'empty' ? [] : structuredClone(mockState.items), params)
+    if (!result) return HttpResponse.json({ code: 'INVALID_CATALOG_QUERY' }, { status: 400 })
+    const failsOnce = scenario === 'flaky' && mockState.failuresLeft > 0
+    if (failsOnce) mockState.failuresLeft -= 1
+    await delay(scenario === 'slow' ? 1800 : scenario === 'race' && params.get('q') === 'Emerald' ? 2400 : 150)
+    if (scenario === 'offline') return HttpResponse.error()
+    if (scenario === 'error' || failsOnce) return HttpResponse.json({ code: 'UNAVAILABLE' }, { status: 503 })
+    return HttpResponse.json(result)
   }),
   http.post('*/api/demo/scenario', async ({ request }) => {
     const body: unknown = await request.json()

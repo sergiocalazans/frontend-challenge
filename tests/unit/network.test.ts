@@ -34,16 +34,16 @@ it('uses the real Socket.IO client, ignores stale events and releases listeners'
   try {
     await vi.waitFor(() => expect(socket.connected).toBe(true))
     await vi.waitFor(() => expect(listeners.size).toBe(1))
-    await vi.waitFor(() => expect(refresh).toHaveBeenCalledTimes(5))
+    await vi.waitFor(() => expect(refresh).toHaveBeenCalledTimes(1))
     await api.post('/demo/nfts/emerald-ape/update')
-    await vi.waitFor(() => expect(refresh).toHaveBeenCalledTimes(6))
+    await vi.waitFor(() => expect(refresh).toHaveBeenCalledTimes(2))
     for (const emit of listeners) {
       emit({ eventId: 'duplicate', nftId: 'emerald-ape', version: 2 })
       emit({ eventId: 'old', nftId: 'emerald-ape', version: 1 })
     }
     // Wait for a newer event: it establishes that the queued older packets were processed.
     await api.post('/demo/nfts/emerald-ape/update')
-    await vi.waitFor(() => expect(refresh).toHaveBeenCalledTimes(7))
+    await vi.waitFor(() => expect(refresh).toHaveBeenCalledTimes(3))
   } finally { dispose() }
   expect(socket.connected).toBe(false)
   expect(socket.listeners('nft.updated')).toHaveLength(0)

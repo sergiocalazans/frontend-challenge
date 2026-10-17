@@ -2,10 +2,10 @@ import { SearchX, TriangleAlert } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 
-export function LoadingCards({ className = 'grid-cols-2 gap-6 md:grid-cols-4' }: { className?: string }) {
+export function LoadingCards({ className = 'grid-cols-2 gap-6 md:grid-cols-4', count = 4, catalog = false }: { className?: string; count?: number; catalog?: boolean }) {
   return <div role="status" aria-label="Carregando NFTs" className={`grid ${className}`}>
     <span className="sr-only">Carregando NFTs</span>
-    {Array.from({ length: 4 }, (_, index) => <div key={index} aria-hidden="true" className="space-y-3"><Skeleton className="shimmer aspect-square w-full rounded-xl" /><Skeleton className="shimmer h-5 w-3/4" /><Skeleton className="shimmer h-5 w-1/2" /></div>)}
+    {Array.from({ length: count }, (_, index) => <div key={index} aria-hidden="true" className="space-y-3"><Skeleton className={`shimmer aspect-square w-full rounded-xl ${catalog ? 'lg:aspect-auto lg:h-[300px]' : ''}`} /><Skeleton className="shimmer h-5 w-3/4" /><Skeleton className="shimmer h-5 w-1/2" />{catalog && <Skeleton className="shimmer h-8 w-1/2" />}</div>)}
   </div>
 }
 

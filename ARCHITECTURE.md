@@ -66,3 +66,9 @@ As próximas features devem implementar contratos de sessão, catálogo completo
 A base visual agora separa tokens de regras globais e oferece composições de conta/compra, FormField, drawer e skeletons específicos. Os contratos, fontes dos valores e limites estão em [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md). As rotas de perfil e carteiras compartilham a sidebar; seu conteúdo ainda é de preparação e não expõe dados privados. A composição de compra é demonstrada no laboratório, sem cotação ou pedido inventado. Resultados incrementais em [docs/DESIGN_SYSTEM_VALIDATION.md](docs/DESIGN_SYSTEM_VALIDATION.md).
 
 A rota do laboratório é carregada sob demanda por `lazyRouteComponent`; a primeira visita baixa seu chunk separado. Isso retirou cerca de 70 kB do chunk principal nesta feature. A divisão não altera a ativação do MSW nem fornece um caminho especial de auditoria.
+
+## Catálogo com URL e paginação
+
+O contrato de listagem foi ampliado para `{ items, total, page, pageSize, totalPages }`, com busca, categoria, rede, faixa ETH e ordenação no servidor MSW. A chave Query contém todos os parâmetros; o parser de URL mantém texto decimal e o Axios consome AbortSignal. Eventos Socket.IO invalidam as listas, para reavaliar filtros e ordenação. O mock não emite mais um evento inicial por NFT, pois a conexão já reconcilia por REST.
+
+Detalhes do contrato, decisões visuais, política de estado e cenários estão em [docs/CATALOG.md](docs/CATALOG.md); resultados reais em [docs/CATALOG_VALIDATION.md](docs/CATALOG_VALIDATION.md). A descrição antiga da chave apenas por `q` e do catálogo de quatro itens refere-se ao setup e foi substituída por esta evolução. O laboratório continua solicitando quatro itens para seus exemplos.
