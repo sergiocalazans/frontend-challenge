@@ -1,7 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import lighthouse from 'lighthouse'
 import desktop from 'lighthouse/core/config/desktop-config.js'
-import { launch } from 'chrome-launcher'
 import { chromium } from '@playwright/test'
 import { preview } from 'vite'
 
@@ -13,14 +12,15 @@ const results = []
 try {
   for (const profile of ['mobile', 'desktop']) {
     for (let run = 1; run <= 3; run++) {
-      const chrome = await launch({ chromePath: chromium.executablePath(), chromeFlags: ['--headless', '--disable-gpu'] })
+      // Use the same headless Chromium distribution already exercised by E2E.
+      const chrome = await chromium.launch({ headless: true, args: ['--remote-debugging-port=9223'] })
       try {
-        const result = await lighthouse('http://127.0.0.1:4175/', { port: chrome.port, output: ['html', 'json'], logLevel: 'error' }, profile === 'desktop' ? desktop : undefined)
+        const result = await lighthouse('http://127.0.0.1:4175/', { port: 9223, output: ['html', 'json'], logLevel: 'error' }, profile === 'desktop' ? desktop : undefined)
         if (!result || result.lhr.runtimeError) throw new Error(result?.lhr.runtimeError?.message ?? 'No Lighthouse result')
         await writeFile(`${directory}/${profile}-${run}.html`, result.report[0])
         await writeFile(`${directory}/${profile}-${run}.json`, result.report[1])
         results.push({ profile, run, version: result.lhr.lighthouseVersion, scores: Object.fromEntries(Object.entries(result.lhr.categories).map(([key, value]) => [key, Math.round((value.score ?? 0) * 100)])), metrics: Object.fromEntries(['largest-contentful-paint', 'cumulative-layout-shift', 'total-blocking-time'].map(key => [key, result.lhr.audits[key].numericValue])) })
-      } finally { await chrome.kill() }
+      } finally { await chrome.close() }
     }
   }
   const median = values => [...values].sort((a,b) => a-b)[1]
