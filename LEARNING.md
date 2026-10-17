@@ -99,3 +99,12 @@ Revise o código e execute os exemplos antes de defender a solução. O candidat
    - O catálogo implementa os 12 grupos completos? Não. Cobre o grupo 1 e amplia os grupos 11/12 e atualização de catálogo; conta, checkout e detalhe permanecem features próprias.
 
 **Execução de E2E:** após timeouts de bootstrap em rodadas com dois workers, o runner foi limitado a um processo de teste concorrente. Os casos, timeouts e baselines permanecem iguais; concorrência de requisições continua coberta dentro do teste. Isso é uma decisão de orçamento de execução, não uma garantia de que a causa de toda intermitência foi eliminada.
+# Feature: detalhes, edições e favoritos (17/10/2026)
+
+1. **Implementação:** detalhe por ID com galeria/ampliação, tiragens, quantidade limitada, recomendações e favorito persistido por usuário, incluindo atualização otimista/rollback e reconsulta após Socket.IO.
+2. **Arquivos principais:** `features/nft-details`, `mocks/details.ts`, `mocks/detail-session-bridge.ts`, router, testes `details.*` e script Lighthouse para início/detalhe.
+3. **Fluxo:** URL → query por NFT → Axios/MSW → obra/edições/estoque; controles atualizam a URL; favoritos usam chave privada por userId, snapshot otimista e confirmação REST. Evento Socket.IO invalida queries, sem alterar preço diretamente no componente.
+4. **Tecnologias:** React/TypeScript, TanStack Router/Query, Axios, MSW, Socket.IO Client, Radix Dialog/Tabs, Playwright e Lighthouse.
+5. **Decisões:** seleção indisponível continua explícita; quantidade efetiva respeita estoque; miniaturas são recortes reais da mesma imagem. PR independente de autenticação, com fixture do contrato de sessão; integração de login/favoritos fica pendente até os merges. Comprar transmite intenção ao carrinho ainda em desenvolvimento, sem alegar compra concluída.
+6. **Como testar:** acesso direto `/nfts/emerald-ape?edition=fifty&quantity=4`, `/nfts/unknown`, edição ABERTA, limite, galeria e teclado. Sessões de fixture ana/bruno, falha de favorito e persistência/isolamento; MSW pode segurar escrita, expirar sessão e liberar resposta para verificar rejeição tardia. POST de preço/estoque chega pelo Socket.IO real.
+7. **Defesa:** Por que o snapshot otimista precisa de rollback? Por que o servidor revalida sessão depois da latência? Por que não aplicar uma mutation atrasada ao cache de outro usuário? Qual diferença entre edição e quantidade? Como o preço string evita perda de precisão? Por que reconectar exige REST mesmo havendo eventos? Qual teste integrado ainda falta antes de juntar PRs?

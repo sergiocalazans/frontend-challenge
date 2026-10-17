@@ -87,3 +87,6 @@ O início permite buscar por nome, combinar categoria/rede/faixa ETH, ordenar e 
 No laboratório, os cenários adicionais `race`, `offline` e `flaky` exercitam respostas fora de ordem, falha de conexão e recuperação. Selecione um cenário e volte ao início pelos links internos; refresh reinicia o cenário configurado em `VITE_MOCK_SCENARIO`. `race` atrasa a busca exata Emerald; `flaky` falha nas duas primeiras consultas do cenário. Consulte [guia do catálogo](docs/CATALOG.md) e [resultados desta feature](docs/CATALOG_VALIDATION.md).
 
 O Playwright usa um worker por padrão para reduzir contenção entre processos Chromium. Os testes de concorrência continuam disparando requisições sobrepostas no navegador, sem alteração de timeout ou retries para esconder falhas.
+# Detalhes e favoritos
+
+Abra `/nfts/emerald-ape`; edições e quantidade podem ser preservadas por `?edition=fifty&quantity=4`. Galeria, estoque e favoritos usam REST/MSW; eventos de preço/estoque passam pelo Socket.IO real. Esta branch é independente do PR de autenticação: consulte [contrato de sessão, fixtures e limites de integração](docs/NFT_DETAILS.md). Comprar encaminha a seleção ao carrinho ainda em desenvolvimento. `npm run audit:lighthouse` agora mede início e detalhe, três vezes por perfil.
