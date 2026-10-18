@@ -28,7 +28,7 @@ Formulário → validação → mutation TanStack Query → Axios → MSW → to
 
 `GET /session` não faz retry automático, revalida em montagens/foco e a cada 30 segundos. Uma resposta 401 da identidade atual dispara limpeza do token e do cache privado. Respostas 401 de um token anterior não encerram uma sessão nova. Falha de rede/503 na verificação exibe retry; não é tratada como sessão anônima.
 
-Rotas perfil, carteiras, checkout e pedidos usam `RequireSession`; enquanto consulta, exibem skeleton. Sem sessão, redirecionam ao login preservando path, query e hash. Expiração mantém esse contexto para reautenticação. Checkout/perfil/carteiras/pedidos ainda são placeholders das próximas features; autenticar não simula suas operações.
+Rotas perfil, carteiras, checkout e pedidos usam `RequireSession`; enquanto consulta, exibem skeleton. Sem sessão, redirecionam ao login preservando path, query e hash. Expiração mantém esse contexto para reautenticação. Carteiras, checkout e pedidos usam os contratos REST/MSW de [CART_CHECKOUT.md](CART_CHECKOUT.md); rascunhos e tentativas são isolados por usuário e permitem retomada após expiração. Perfil continua pendente.
 
 Dados privados devem usar chaves `['private', userId, recurso, ...]`. Antes de substituir identidade ou após logout/expiração, consultas privadas são canceladas e removidas. A troca de token em outra aba também limpa o cache privado e reconsulta sessão. Logout só confirma após 204; em falha, mantém contexto e oferece nova tentativa. Mutations não têm retry automático; o botão é bloqueado enquanto envia.
 

@@ -79,3 +79,9 @@ Detalhes do contrato, decisões visuais, política de estado e cenários estão 
 ## Autenticação e favoritos integrados
 
 `session-store.ts` é a única fonte dos mocks para contas e sessões, em memória no Node e localStorage no browser. Auth e favoritos revalidam o token nessa fonte; componentes não acessam o banco simulado. `useSession`/`SessionLifecycle` centralizam recuperação e invalidação, e Axios preserva Authorization explícito. `['private', userId, 'favorites']` isola o cache; logout/troca/401 cancelam e removem dados privados. Mutations capturam o token e descartam resultados de identidades anteriores. Logout compara token antes e depois do cancelamento. A troca entre abas reseta a consulta de sessão, mantendo a proteção em skeleton durante a verificação.
+
+## Comércio com cotação e pedidos
+
+Contratos e regras em [docs/CART_CHECKOUT.md](docs/CART_CHECKOUT.md). Carrinho/carteiras/cotação/pedido passam por Axios/MSW. O mock persiste inventário por edição e dados por proprietário; o cliente usa cache privado e rascunho por usuário. A cotação é a referência do fechamento; o backend compara fingerprint e reserva estoque antes de registrar pending. Idempotência precede revalidação de cotação ao recuperar uma tentativa existente. GET de pedido reconcilia o resultado e produz recibo imutável. Valores usam bigint no mock e strings no transporte.
+
+O stream público existente invalida carrinho/catálogo e informa mudanças. Polling recupera pedido nesta etapa; canais privados, order.updated e reconexão são a próxima feature. As branches serão sequenciais, aguardando merge autorizado entre elas. Nenhum resultado parcial equivale à conclusão dos 12 grupos do desafio.

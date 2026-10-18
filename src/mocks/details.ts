@@ -1,26 +1,28 @@
 import { delay, http, HttpResponse } from 'msw'
 import type { NftDetail } from '@/features/nft-details/contracts'
+import { editionStock, hydrateInventory } from './inventory'
 import { mockState } from './state'
 import { expireDetailSessions, fixtureSession, readSessionStore, resolveDetailSession, seedDetailSessions } from './session-store'
 
 let favorites: Record<string, string[]> = {}
 let failFavorite = false
+let favoriteReadDelay = 150
 let holdWrites = false
 const pendingWrites = new Set<() => void>()
 function releaseWrites() { holdWrites = false; pendingWrites.forEach(resolve => resolve()); pendingWrites.clear() }
 function readFavorites() { try { favorites = JSON.parse(localStorage.getItem('kurio.mock-favorites.v1') ?? '{}') as Record<string, string[]> } catch { /* Node uses memory. */ } }
 function persistFavorites() { try { localStorage.setItem('kurio.mock-favorites.v1', JSON.stringify(favorites)) } catch { /* Node uses memory. */ } }
-export function resetDetails() { favorites = {}; failFavorite = false; releaseWrites(); persistFavorites() }
+export function resetDetails() { favorites = {}; failFavorite = false; favoriteReadDelay = 150; releaseWrites(); persistFavorites() }
 export function nftDetail(id: string): NftDetail | undefined {
+  hydrateInventory()
   const nft = mockState.items.find(item => item.id === id)
   if (!nft) return undefined
-  const unique = Math.min(nft.available, 1)
-  const ten = Math.min(Math.max(nft.available - unique, 0), 3)
+  const counts = editionStock(nft)
   return { ...nft, description: `Um colecionável digital da coleção Kurio Editions na rede ${nft.network}, com arte para colecionadores.`, collection: 'Kurio Apes', attributes: ['Arte digital', nft.network, 'Kurio Editions'], editions: [
-    { id: 'unique', label: '1/1', available: unique },
-    { id: 'ten', label: '1/10', available: ten },
-    { id: 'fifty', label: '1/50', available: nft.available - unique - ten },
-    { id: 'open', label: 'ABERTA', available: 0 },
+    { id: 'unique', label: '1/1', available: counts.unique },
+    { id: 'ten', label: '1/10', available: counts.ten },
+    { id: 'fifty', label: '1/50', available: counts.fifty },
+    { id: 'open', label: 'ABERTA', available: counts.open },
   ], related: mockState.items.filter(item => item.id !== nft.id && item.category === nft.category).slice(0, 4) }
 }
 const unauthorized = () => HttpResponse.json({ code: 'SESSION_EXPIRED', message: 'Entre para gerenciar favoritos.' }, { status: 401 })
@@ -49,7 +51,7 @@ export const detailHandlers = [
     return nft ? HttpResponse.json(nft) : HttpResponse.json({ code: 'NOT_FOUND' }, { status: 404 })
   }),
   http.get('*/api/favorites', async ({ request }) => {
-    await delay(150)
+    await delay(favoriteReadDelay)
     const user = resolveDetailSession(request)
     if (!user) return unauthorized()
     readFavorites()
@@ -57,6 +59,7 @@ export const detailHandlers = [
   }),
   http.put('*/api/favorites/:id', ({ request, params }) => changeFavorite(request, String(params.id), true)),
   http.delete('*/api/favorites/:id', ({ request, params }) => changeFavorite(request, String(params.id), false)),
+  http.post('*/api/demo/favorites/read-delay', async ({request}) => { const input = await request.json() as {milliseconds?:number}; if(!Number.isInteger(input.milliseconds) || input.milliseconds! < 0 || input.milliseconds! > 3000) return HttpResponse.json({code:'INVALID_DELAY'},{status:422}); favoriteReadDelay = input.milliseconds!; return HttpResponse.json({ok:true}) }),
   http.post('*/api/demo/favorites/fail-next', () => { failFavorite = true; return HttpResponse.json({ ok: true }) }),
   http.post('*/api/demo/favorites/hold', () => { holdWrites = true; return HttpResponse.json({ ok: true }) }),
   http.post('*/api/demo/details/reset', () => { resetDetails(); seedDetailSessions(); return HttpResponse.json({ ok: true }) }),

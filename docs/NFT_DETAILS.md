@@ -26,7 +26,7 @@ Router lê nftId e valida edição/quantidade da URL → TanStack Query usa `['n
 
 Galeria usa a imagem original e dois recortes CSS identificados como detalhes; não inventa outras fotografias da obra. Dialog Radix amplia a imagem e gerencia foco/Escape. Tabs apresentam informações e rede; avaliações sem contrato não são inventadas. Loading usa o DetailSkeleton existente com shimmer e movimento reduzido; 404, HTTP/rede, retry, vazio de estoque/recomendações e atualização em segundo plano têm estados próprios.
 
-Comprar NFT navega para `/cart?nftId=...&edition=...&quantity=...`, preservando a seleção como intenção. O carrinho ainda é placeholder nesta branch: nenhuma inclusão, cotação ou compra é declarada como concluída. Sua feature deverá consumir e validar essa intenção na API. A limitação é informada junto da ação.
+Comprar NFT envia a edição e quantidade para a API de carrinho com chave idempotente e navega para `/cart` após a inclusão. URLs antigas com `nftId`, `edition` e `quantity` oferecem uma ação explícita de inclusão, validada pela API. Cotação, confirmação e recibo estão descritos em [CART_CHECKOUT.md](CART_CHECKOUT.md).
 
 ## Favoritos e isolamento
 

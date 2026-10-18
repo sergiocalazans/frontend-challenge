@@ -71,11 +71,11 @@ test('real Socket.IO event reconciles updated REST data', async ({ page }) => {
   await expect(card).toContainText('1.29 ETH')
 })
 
-test('routes are honest about pending flows and handle unknown URLs', async ({ page }) => {
+test('checkout handles an empty cart and unknown routes remain accessible', async ({ page }) => {
   await loginViaApi(page)
   await page.goto('/checkout')
   await expect(page.getByRole('heading', { name: 'Pagamento' })).toBeVisible()
-  await expect(page.getByText('Em desenvolvimento', { exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Seu carrinho está vazio', exact: true })).toBeVisible()
   await page.goto('/does-not-exist')
   await expect(page.getByRole('heading', { name: 'Página não encontrada' })).toBeVisible()
 })
