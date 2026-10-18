@@ -1,0 +1,50 @@
+import { expect,test } from '@playwright/test'
+import { loginViaApi } from './auth-helpers'
+import { addFromDetail,prepareCheckout,seedWallet } from './commerce-helpers'
+
+test('keyboard review, confirmation and receipt restore focus without a pointer',async ({page}) => {
+  await prepareCheckout(page)
+  await page.getByRole('button',{name:'Revisar compra',exact:true}).focus()
+  await page.keyboard.press('Enter')
+  const review = page.getByRole('region',{name:'Revisão da compra',exact:true})
+  await expect(review).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(page.getByRole('button',{name:'Confirmar compra',exact:true})).toBeFocused()
+  await page.keyboard.press('Enter')
+  const receipt = page.getByRole('dialog',{name:'Compra confirmada na simulação'})
+  await expect(receipt.getByRole('heading',{name:'Compra confirmada na simulação',exact:true})).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(receipt.getByRole('link',{name:'Continuar explorando',exact:true})).toBeFocused()
+  await expect(receipt.getByRole('link',{name:'Continuar explorando',exact:true})).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('button',{name:'Ver recibo',exact:true})).toBeFocused()
+})
+
+test('@visual saved wallet layout and narrow reflow preserve the complete form',async ({page}) => {
+  await loginViaApi(page);await seedWallet(page);await page.goto('/account/wallets')
+  const primary = page.getByRole('form',{name:'Carteira principal',exact:true})
+  await expect(primary.getByLabel('Apelido da carteira')).toHaveValue('Principal')
+  if(page.viewportSize()!.width < 768) await expect(page.getByRole('navigation',{name:'Navegação mobile'}).getByRole('link',{name:'Perfil',exact:true})).toHaveAttribute('href','/account/profile')
+  await expect(page.getByRole('button',{name:'Adicionar carteira secundária',exact:true})).toBeVisible()
+  await page.evaluate(() => document.fonts.ready)
+  await page.getByRole('main').focus()
+  await expect(page).toHaveScreenshot('wallets.png',{fullPage:true,animations:'disabled'})
+  await page.setViewportSize({width:320,height:640})
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  await primary.getByRole('button',{name:'Salvar carteira',exact:true}).scrollIntoViewIfNeeded()
+  await expect(primary.getByRole('button',{name:'Salvar carteira',exact:true})).toBeVisible()
+})
+
+test('MSW connection failure preserves the cart and retry restores checkout access',async ({page}) => {
+  await addFromDetail(page)
+  await page.getByRole('link',{name:/Continuar explorando/}).click()
+  await page.evaluate(async () => {await fetch('/api/demo/scenario',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:'offline'})})})
+  await page.getByRole('link',{name:'Abrir carrinho',exact:true}).click()
+  await expect(page.getByRole('alert')).toContainText('Não foi possível carregar os dados')
+  await expect(page.getByTestId('cart-item-emerald-ape-fifty')).toBeVisible()
+  await expect(page.getByRole('link',{name:'Conectar e finalizar',exact:true})).toHaveAttribute('aria-disabled','true')
+  await page.evaluate(async () => {await fetch('/api/demo/scenario',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:'default'})})})
+  await page.getByRole('button',{name:'Tentar novamente',exact:true}).click()
+  await expect(page.getByTestId('purchase-total')).toHaveText('1.1916 ETH')
+  await expect(page.getByRole('link',{name:'Conectar e finalizar',exact:true})).toHaveAttribute('aria-disabled','false')
+})
