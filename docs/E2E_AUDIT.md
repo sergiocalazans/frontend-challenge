@@ -1,5 +1,7 @@
 # Auditoria de E2E, regressão visual e Lighthouse
 
+Registro histórico da branch independente. Os PRs #9 e #10 já foram integrados em develop; a auditoria conjunta, incluindo perfil e preparação Vercel, está em [DELIVERY_REPORT.md](../DELIVERY_REPORT.md). Os resultados abaixo continuam vinculados às versões indicadas neste documento.
+
 ## Base e plano
 
 Branch `feature/e2e-tests`, nome corrigido conforme a solicitação mais recente do candidato, criada de `develop` b1ad9f1 com working tree limpo. O PR #8 já estava integrado. [PR #9 de realtime](https://github.com/sergiocalazans/frontend-challenge/pull/9) é independente e não foi incorporado aqui, por escolha explícita do candidato. Não houve merge pelo agente. Resultados desta branch não comprovam a integração futura dos dois PRs.

@@ -1,6 +1,8 @@
 # Preparação da demonstração na Vercel
 
-Branch feature/vercel-deployment, criada de develop f3a6390 e atualizada por fast-forward para 1614b07 após o merge externo do PR #11. Nenhum PR foi mesclado pelo agente. Não existe URL pública e não foi criado projeto/deploy remoto.
+A auditoria posterior da versão integrada está em [DELIVERY_REPORT.md](../DELIVERY_REPORT.md). **Atualização de 18/10/2026:** o candidato forneceu [a URL pública](https://frontend-challenge-pi-six.vercel.app/), SHA 58188fc7078755f9a627c8c69bb9fa1f6d0d1954. Playwright público: **12/12, 82,52 s**, em três viewports, sem falha/skip/flaky/retry; headers/worker, deep links/refresh, persistência, MSW, cotação e recuperação Socket.IO passaram. HTML/JSON, metadados, HTTP e comparação de worker em docs/reports/delivery/deployment-public. O agente não fez deploy. gitDirty=true foi informado pelo build remoto; não certificamos checkout limpo. Os capítulos abaixo preservam o registro histórico original da preparação; o ensaio local sozinho não comprovava a plataforma.
+
+Branch feature/vercel-deployment, criada de develop f3a6390 e atualizada por fast-forward para 1614b07 após o merge externo do PR #11. Nenhum PR foi mesclado pelo agente. Na entrega original dessa branch ainda não existia URL pública; a validação posterior está no aviso acima.
 
 ## Estrutura e decisões
 

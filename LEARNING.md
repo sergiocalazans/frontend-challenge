@@ -1,5 +1,17 @@
 # Aprendizado e preparação para defesa
 
+Os capítulos de features registram sua evolução histórica. O estado integrado atual, resultados e pendências estão em DELIVERY_REPORT.md; descrições antigas de trabalho futuro foram superadas pelas features seguintes.
+
+## Auditoria final de entrega — 18/10/2026
+
+1. **O que foi feito:** revisão integral de CHALLENGE/AGENTS, conferência de integrações aprovadas, matriz PASS/FAIL/NOT TESTED, critérios eliminatórios individuais, regressão completa e Lighthouse da SHA real de develop; preparação de PR de entrega como rascunho.
+2. **Arquivos principais:** DELIVERY_REPORT.md, README.md, ARCHITECTURE.md, PROJECT_NOTE.md e docs/reports/delivery. Os PRs de testes, perfil e preparação de deploy têm evidências próprias; a auditoria identifica a SHA e as integrações realmente verificadas. A nota de passagem resume decisões, resultados e prioridades para o candidato continuar e defender o projeto.
+3. **Fluxo:** fixar SHA → inspecionar contratos/código/testes → executar verificações → guardar logs/HTML/JSON → confrontar cada requisito → registrar pendências e preparar revisão. Teste verde de funcionalidade existente não comprova funcionalidade ausente.
+4. **Tecnologias:** Git/GitHub, TypeScript, ESLint, Vite, Vitest/MSW/Socket.IO real, Playwright e Lighthouse. Inicialmente não havia URL; depois o candidato forneceu a Vercel e a mesma suíte de deploy passou 12/12 publicamente. Suíte local 162/162, unitários 50/50. Lighthouse P=77/100 início e 84/98 detalhe; A/BP=100, SEO=92.
+5. **Decisões:** nenhuma pontuação ou evidência inventada; preservar reprovações e medianas de três rodadas; comparar capturas ao SVG e distinguir baseline de fidelidade; performance mobile e fidelidade integral são FAIL, zoom real/leitor de tela continuam NOT TESTED. Merge #13 e deploy ocorreram externamente; o agente apenas criou PRs e testou a URL fornecida, sem mesclar PRs nem publicar release. SHA pública corresponde à árvore auditada; gitDirty=true do host é uma limitação de proveniência registrada.
+6. **Como reproduzir:** seguir README com npm ci, instalação Chromium, lint/test/typecheck/build, E2E e Lighthouse em sequência; abrir HTML preservado e conferir SHA/versões/limitações no DELIVERY_REPORT. Mudança de código exige verificar novamente os fluxos afetados.
+7. **Perguntas de defesa:** por que uma suíte E2E verde não significa 100% do desafio? Como a idempotência evita outra compra após timeout? Por que evento invalida REST em vez de escrever recibo? Qual a diferença entre FAIL e NOT TESTED? Por que preview local não comprova refresh em um host público? Por que manter o PR final em rascunho?
+
 ## Auditoria de E2E e regressão visual
 
 1. **Implementação:** teclado na revisão/recibo, falha de conexão com retry, baselines de carteiras, relatório JSON e verificador estrito das metas Lighthouse.

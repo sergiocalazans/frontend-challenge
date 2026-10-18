@@ -1,0 +1,130 @@
+{
+  "auditedCommit": "18addfcd42b8f25635d463b6b9e85713a0775968",
+  "source": "GitHub get_pr_info and origin/develop fetched on 2026-10-18",
+  "pullRequests": [
+    {
+      "number": 1,
+      "title": "feat(setup): configure project foundation and Kurio design system",
+      "state": "closed",
+      "merged": true,
+      "mergeCommit": "d5cfb0dc1f5da3b81cb726193e82f26d906f2dd2",
+      "url": "https://github.com/sergiocalazans/frontend-challenge/pull/1"
+    },
+    {
+      "number": 2,
+      "title": "feat(design-system): add reusable tokens, components and layouts",
+      "state": "closed",
+      "merged": true,
+      "base": "develop",
+      "head": "feature/design-system",
+      "headSha": "2457bf50cfaa972686e0a62af8c494125ea84a37",
+      "mergeCommit": "adc798c7c7f47f33940a3a863587a7e152faaea3",
+      "url": "https://github.com/sergiocalazans/frontend-challenge/pull/2"
+    },
+    {
+      "number": 3,
+      "title": "feat(catalog): add search, filters and pagination",
+      "state": "closed",
+      "merged": true,
+      "base": "develop",
+      "head": "feature/nft-catalog",
+      "headSha": "90c417d9b34acd9f26da9771ab73b5480b3bf503",
+      "mergeCommit": "4d87a9db0801f354dadb44645a44b8e9af4d8dad",
+      "url": "https://github.com/sergiocalazans/frontend-challenge/pull/3"
+    },
+    {
+      "number": 4,
+      "title": "feat(auth): add registration and persistent sessions",
+      "state": "closed",
+      "merged": true,
+      "mergeCommit": "cc303636d9d38133ddf471cf0583e2100520b8f2",
+      "url": "https://github.com/sergiocalazans/frontend-challenge/pull/4"
+    },
+    {
+      "number": 5,
+      "title": "feat(nft-details): add editions and persistent favorites",
+      "state": "closed",
+      "merged": true,
+      "base": "develop",
+      "head": "feature/nft-details",
+      "headSha": "1bd4d416075b78e87f2e84504aef5faa6b69f8e2",
+      "mergeCommit": "5db74c52bee65c2ca6bd1e9638503bea66369f2d",
+      "url": "https://github.com/sergiocalazans/frontend-challenge/pull/5"
+    },
+    {
+      "number": 6,
+      "title": "Revert \"feat(auth): add registration and persistent sessions\"",
+      "state": "closed",
+      "merged": true,
+      "mergeCommit": "b16a21535a1e7861b174dc9559a8583e51eebcf6",
+      "url": "https://github.com/sergiocalazans/frontend-challenge/pull/6"
+    },
+    {
+      "number": 7,
+      "title": "feat(auth): restore sessions and integrate NFT favorites",
+      "state": "closed",
+      "merged": true,
+      "base": "develop",
+      "head": "feature/authentication",
+      "headSha": "8b35a1a596f295315e341c3f1cd63202586d87ca",
+      "mergeCommit": "101072609a85bec797251552e2bd328fc6b8632d",
+      "url": "https://github.com/sergiocalazans/frontend-challenge/pull/7"
+    },
+    {
+      "number": 8,
+      "title": "feat(checkout): add carts wallets and idempotent orders",
+      "state": "closed",
+      "merged": true,
+      "base": "develop",
+      "head": "feature/cart-checkout",
+      "headSha": "7fdb9baa6d1655a7584facb9b05e640ed55b2b9c",
+      "mergeCommit": "b1ad9f1a8b7a5fa9ae78ea785e63df9d2aace063",
+      "url": "https://github.com/sergiocalazans/frontend-challenge/pull/8"
+    },
+    {
+      "number": 9,
+      "title": "feat(realtime): reconcile authenticated order events",
+      "state": "closed",
+      "merged": true,
+      "base": "develop",
+      "head": "feature/realtime",
+      "headSha": "0a8274b572bf77d1ef72d0c794d9b7e538925b24",
+      "mergeCommit": "eff91e330cd10a1c0eec43cfb3e3483677ec5448",
+      "url": "https://github.com/sergiocalazans/frontend-challenge/pull/9"
+    },
+    {
+      "number": 10,
+      "title": "test(e2e): add regression audits and Lighthouse budget checks",
+      "state": "closed",
+      "merged": true,
+      "mergeCommit": "f3a6390b0b5054115ec3af69583635cc9e9411f5",
+      "url": "https://github.com/sergiocalazans/frontend-challenge/pull/10"
+    },
+    {
+      "number": 11,
+      "title": "feat(profile): complete collector avatar and password flows",
+      "state": "closed",
+      "merged": true,
+      "mergeCommit": "1614b07b449cca56746fd01abfd58cb7e9816533",
+      "url": "https://github.com/sergiocalazans/frontend-challenge/pull/11"
+    },
+    {
+      "number": 12,
+      "title": "chore(deploy): prepare Vercel demo and deployment verification",
+      "state": "closed",
+      "merged": true,
+      "mergeCommit": "18addfcd42b8f25635d463b6b9e85713a0775968",
+      "url": "https://github.com/sergiocalazans/frontend-challenge/pull/12"
+    }
+  ],
+  "releasePullRequest": {
+    "number": 13,
+    "state": "closed",
+    "merged": true,
+    "initiallyDraft": true,
+    "mergedAt": "2026-10-18T14:14:49Z",
+    "mergeCommit": "58188fc7078755f9a627c8c69bb9fa1f6d0d1954",
+    "url": "https://github.com/sergiocalazans/frontend-challenge/pull/13",
+    "actor": "External merge, not performed by the agent"
+  }
+}
