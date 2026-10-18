@@ -10,7 +10,13 @@ import { orderListeners, socketClosers, reconnectAfter, interruptSockets, publis
 
 const market = ws.link(env.socketUrl.replace(/^http/, 'ws'))
 export const socketHandlers = [market.addEventListener('connection', connection => {
-  if (Date.now() < reconnectAfter) { connection.client.close(1012,'Simulated reconnect'); return }
+  if (Date.now() < reconnectAfter) {
+    // Open Engine.IO, then close before the Socket.IO namespace acknowledges.
+    // A bare close during opening otherwise waits for Manager's handshake timeout.
+    connection.client.send('0'+JSON.stringify({sid:'retrying',upgrades:[],pingInterval:25000,pingTimeout:5000}))
+    setTimeout(() => connection.client.close(1012,'Simulated reconnect'),0)
+    return
+  }
   const { client } = toSocketIo(connection)
   let token = '', userId = ''
   const session = () => token ? resolveDetailSession(new Request('http://localhost/api/session',{headers:{Authorization:`Bearer ${token}`}})) : null
