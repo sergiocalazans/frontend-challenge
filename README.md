@@ -27,6 +27,8 @@ npm run build
 npm run preview
 ```
 
+Auditoria: `npm run verify` executa lint, unitários, build/typecheck e E2E em sequência. `npm run audit:lighthouse` gera as 12 medições e `npm run audit:check` verifica completude, medianas e metas com exit code. Playwright exporta HTML e JSON. Consulte [matriz de cobertura, resultados e limitações](docs/E2E_AUDIT.md). O PR de auditoria é independente do [PR #9 de realtime](https://github.com/sergiocalazans/frontend-challenge/pull/9); a combinação das branches exige nova validação em develop.
+
 O preview serve o build otimizado em `http://127.0.0.1:4173`. **`build` inclui mocks** para demonstração. `build:api` e `dev:api` usam modo production, com mocks desativados por padrão; não existe backend real fornecido. Configure a URL REST/realtime antes de utilizá-los. Não se deve instalar apenas dependências de produção antes de construir: ferramentas e MSW são necessários no build.
 
 ## Variáveis e cenários

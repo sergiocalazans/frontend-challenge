@@ -80,6 +80,10 @@ Detalhes do contrato, decisões visuais, política de estado e cenários estão 
 
 `session-store.ts` é a única fonte dos mocks para contas e sessões, em memória no Node e localStorage no browser. Auth e favoritos revalidam o token nessa fonte; componentes não acessam o banco simulado. `useSession`/`SessionLifecycle` centralizam recuperação e invalidação, e Axios preserva Authorization explícito. `['private', userId, 'favorites']` isola o cache; logout/troca/401 cancelam e removem dados privados. Mutations capturam o token e descartam resultados de identidades anteriores. Logout compara token antes e depois do cancelamento. A troca entre abas reseta a consulta de sessão, mantendo a proteção em skeleton durante a verificação.
 
+## Validação e proveniência das auditorias
+
+`docs/E2E_AUDIT.md` mapeia os 12 grupos com lacunas explícitas. Playwright exporta HTML/JSON; Lighthouse registra commit/dirty e hash do index construído. O verificador recalcula medianas e aplica as metas originais sem flexibilizá-las. `npm run verify` executa verificações funcionais em sequência; performance é medida e verificada em comandos próprios. Foco da revisão usa ref/effect após commit do React. O plugin Vite inclui modulepreload do mount construído: antecipa download/compilação, enquanto a execução continua após worker.start para preservar o interceptor Socket.IO. A auditoria é independente do PR de realtime; a combinação dos dois ainda precisa de validação após merge autorizado.
+
 ## Comércio com cotação e pedidos
 
 Contratos e regras em [docs/CART_CHECKOUT.md](docs/CART_CHECKOUT.md). Carrinho/carteiras/cotação/pedido passam por Axios/MSW. O mock persiste inventário por edição e dados por proprietário; o cliente usa cache privado e rascunho por usuário. A cotação é a referência do fechamento; o backend compara fingerprint e reserva estoque antes de registrar pending. Idempotência precede revalidação de cotação ao recuperar uma tentativa existente. GET de pedido reconcilia o resultado e produz recibo imutável. Valores usam bigint no mock e strings no transporte.
