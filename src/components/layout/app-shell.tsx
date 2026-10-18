@@ -24,6 +24,7 @@ export function AppShell() {
   const detailRoute = pathname.startsWith('/nfts/')
   const purchaseRoute = pathname === '/cart' || pathname === '/checkout' || pathname.startsWith('/orders/')
   const authRoute = pathname === '/login' || pathname === '/register'
+  const mobileLinks = links.map(link => link.to === '/login' && session.data?.user ? {...link,to:'/account/profile' as const,label:'Perfil'} : link)
   useEffect(() => { document.getElementById('main-content')?.focus({ preventScroll: true }) }, [pathname])
   return <>
     <SessionLifecycle />
@@ -42,7 +43,7 @@ export function AppShell() {
       <p className="mt-5 text-center text-xs text-muted-foreground">© 2026 Kurio · Jungle Gaming NFT Marketplace</p>
     </footer>
     <nav aria-label="Navegação mobile" className={`fixed inset-x-0 bottom-0 z-30 ${authRoute || detailRoute || purchaseRoute ? 'hidden' : 'flex'} justify-around border-t bg-card px-2 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 md:hidden`}>
-      {links.map(({ to, label, icon: Icon }) => <Link key={to} to={to} activeOptions={{ exact: true }} activeProps={{ className: 'text-primary' }} className="flex min-h-11 min-w-14 flex-col items-center gap-1 text-[10px] text-muted-foreground"><Icon size={20} aria-hidden="true" />{label}</Link>)}
+      {mobileLinks.map(({ to, label, icon: Icon }) => <Link key={to} to={to} activeOptions={{ exact: true }} activeProps={{ className: 'text-primary' }} className="flex min-h-11 min-w-14 flex-col items-center gap-1 text-[10px] text-muted-foreground"><Icon size={20} aria-hidden="true" />{label}</Link>)}
     </nav>
   </>
 }

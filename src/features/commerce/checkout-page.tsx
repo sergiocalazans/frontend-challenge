@@ -1,4 +1,4 @@
-import { useState,type FormEvent } from 'react'
+import { useEffect,useRef,useState,type FormEvent } from 'react'
 import { useMutation,useQuery,useQueryClient } from '@tanstack/react-query'
 import { Link,useNavigate } from '@tanstack/react-router'
 import axios from 'axios'
@@ -35,7 +35,10 @@ function CheckoutForm({context,cart,wallets}:{context:CommerceIdentity;cart:Cart
   const chosen = wallets.items.find(wallet => wallet.id === walletId)
   const connected = wallets.connection?.walletId === walletId && wallets.connection.network === network
   const connection = useMutation({mutationFn:({context,id,action}:{context:CommerceIdentity;id:string;action:'connect'|'disconnect'}) => connectWallet(context,id,action),onMutate:async () => {await client.cancelQueries({queryKey:walletsKey(context.userId!)})},onSuccess:(data,variables) => {if(variables.context.token === readToken()) client.setQueryData(walletsKey(variables.context.userId!),data)}})
-  const review = useMutation({mutationFn:async ({context,walletId,network,collector}:{context:CommerceIdentity;walletId:string;network:Network;collector:Collector}) => ({quote:await createQuote(context,walletId,network),collector:JSON.stringify(collector)}),onSuccess:() => {requestAnimationFrame(() => document.getElementById('purchase-review')?.focus())}})
+  const review = useMutation({mutationFn:async ({context,walletId,network,collector}:{context:CommerceIdentity;walletId:string;network:Network;collector:Collector}) => ({quote:await createQuote(context,walletId,network),collector:JSON.stringify(collector)})})
+  const reviewRef = useRef<HTMLElement>(null)
+  // Mutation callbacks may run before React commits the conditional review section.
+  useEffect(() => { if(review.data) reviewRef.current?.focus() },[review.data])
   const quote = review.data?.quote
   const reviewed = Boolean(quote && quote.wallet.id === walletId && quote.wallet.version === chosen?.version && quote.network === network && connected && JSON.stringify(quote.items) === JSON.stringify(cart.items) && quote.coupon === cart.coupon && review.data?.collector === JSON.stringify(collector))
   const submission = useMutation({mutationFn:({context,attempt}:{context:CommerceIdentity;attempt:CheckoutAttempt}) => createOrder(context,attempt),onSuccess:async (order,variables) => {
@@ -71,7 +74,7 @@ function CheckoutForm({context,cart,wallets}:{context:CommerceIdentity;cart:Cart
     {review.isError && <p role="alert" className="mt-4 text-destructive">{purchaseError(review.error)}</p>}
     {submission.isError && <p role="alert" className="mt-4 text-destructive">{purchaseError(submission.error)}</p>}
     {quote && !reviewed && <p role="alert" className="mt-4 text-destructive">Os dados ou valores mudaram. Revise novamente antes de confirmar.</p>}
-    {reviewed && <section id="purchase-review" tabIndex={-1} aria-label="Revisão da compra" className="mt-5 border-t pt-5"><h3 className="font-semibold">Revise sua compra</h3><p className="my-3 text-sm">Colecionador: {collector.displayName} · {collector.email}</p><p className="mb-4 text-xs">Cotação válida por até 2 minutos. Estoque, preço, cupom e conexão serão revalidados na confirmação.</p><Button className="w-full" disabled={!reviewed || submission.isPending} onClick={confirm}>Confirmar compra</Button></section>}
+    {reviewed && <section ref={reviewRef} id="purchase-review" tabIndex={-1} aria-label="Revisão da compra" className="mt-5 border-t pt-5"><h3 className="font-semibold">Revise sua compra</h3><p className="my-3 text-sm">Colecionador: {collector.displayName} · {collector.email}</p><p className="mb-4 text-xs">Cotação válida por até 2 minutos. Estoque, preço, cupom e conexão serão revalidados na confirmação.</p><Button className="w-full" disabled={!reviewed || submission.isPending} onClick={confirm}>Confirmar compra</Button></section>}
   </PurchaseSummary>}>
     <form id="collector-form" noValidate onSubmit={reviewPurchase} className="space-y-6"><h2 className="text-lg font-semibold">Perfil do colecionador</h2><div className="grid gap-5 md:grid-cols-2">{([['displayName','Nome de exibição'],['username','Nome de usuário'],['profileName','Nome do perfil'],['email','E-mail'],['referral','Código de indicação'],['ens','Nome ENS (opcional)']] as const).map(([key,label]) => <FormField key={key} label={label} type={key === 'email' ? 'email' : 'text'} required={key !== 'ens'} maxLength={key === 'email' ? 254 : 80} value={collector[key]} onChange={event => updateCollector(key,event.target.value)} error={fields[key]} />)}</div>
       <label className="field">Observação do colecionador (opcional)<textarea className="min-h-32 rounded-md border bg-background p-3" maxLength={500} value={collector.notes} onChange={event => updateCollector('notes',event.target.value)} aria-invalid={Boolean(fields.notes)} />{fields.notes && <span role="alert">{fields.notes}</span>}</label>

@@ -1,5 +1,15 @@
 # Aprendizado e preparação para defesa
 
+## Auditoria de E2E e regressão visual
+
+1. **Implementação:** teclado na revisão/recibo, falha de conexão com retry, baselines de carteiras, relatório JSON e verificador estrito das metas Lighthouse.
+2. **Arquivos:** `tests/e2e/audits.spec.ts`, `tests/unit/lighthouse-budget.test.ts`, `scripts/check-lighthouse.mjs`, `scripts/lighthouse.mjs`, configuração Playwright, checkout e AppShell.
+3. **Fluxo:** cenário MSW → interação observável → asserções e captura → relatórios; três rodadas Lighthouse → mediana recalculada → verificador compara metas e retorna exit code.
+4. **Tecnologias:** Playwright, Vitest, Node, Lighthouse, React refs/effects e contratos MSW existentes.
+5. **Decisões:** foco após commit do DOM, sem timer arbitrário; labels de navegação refletem sessão; dados de teste do verificador não são medições; baselines não mudam em verify; resultado de branch independente não prova integração. Modulepreload antecipa download/compilação sem executar Socket.IO antes de MSW.
+6. **Como testar:** `npm run verify`, `npm run audit:lighthouse`, `npm run audit:check`; condições, falhas e matriz em `docs/E2E_AUDIT.md`.
+7. **Defesa:** por que mutation success não garante DOM montado? Por que um teste visual precisa de dados estáveis? Por que não escolher a melhor rodada Lighthouse? O que significa exit 1 em audit:check? Por que 12 grupos mapeados não significam 12 grupos integralmente implementados?
+
 ## Feature: project-setup
 
 ### 1. O que foi implementado

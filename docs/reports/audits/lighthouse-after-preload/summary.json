@@ -1,0 +1,293 @@
+{
+  "date": "2026-10-18T13:21:29.862Z",
+  "node": "v22.18.0",
+  "platform": "win32",
+  "code": {
+    "commit": "5abc92218e9f2a4cb2c40d0dac3271a3ca123cae",
+    "dirty": true
+  },
+  "build": {
+    "indexSha256": "0be870c90a6b2d7eaa6898a42534aed35397c9843a45cf36d1a59a74f4da1856"
+  },
+  "scope": "Catalog and NFT detail; default mocks, images and fonts enabled",
+  "results": [
+    {
+      "page": "home",
+      "path": "/",
+      "profile": "mobile",
+      "run": 1,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 50,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 4181.53875,
+        "cumulative-layout-shift": 0,
+        "total-blocking-time": 2514.5845
+      }
+    },
+    {
+      "page": "home",
+      "path": "/",
+      "profile": "mobile",
+      "run": 2,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 85,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 3107.20625,
+        "cumulative-layout-shift": 0,
+        "total-blocking-time": 280
+      }
+    },
+    {
+      "page": "home",
+      "path": "/",
+      "profile": "mobile",
+      "run": 3,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 67,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 3212.47375,
+        "cumulative-layout-shift": 0,
+        "total-blocking-time": 1052.79475
+      }
+    },
+    {
+      "page": "home",
+      "path": "/",
+      "profile": "desktop",
+      "run": 1,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 85,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 1189.034,
+        "cumulative-layout-shift": 0.0000930916732335172,
+        "total-blocking-time": 263.49149999999986
+      }
+    },
+    {
+      "page": "home",
+      "path": "/",
+      "profile": "desktop",
+      "run": 2,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 30,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 3959.3075,
+        "cumulative-layout-shift": 0.0000930916732335172,
+        "total-blocking-time": 6402.015500000001
+      }
+    },
+    {
+      "page": "home",
+      "path": "/",
+      "profile": "desktop",
+      "run": 3,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 88,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 992.9649999999999,
+        "cumulative-layout-shift": 0.0000930916732335172,
+        "total-blocking-time": 268.5
+      }
+    },
+    {
+      "page": "detail",
+      "path": "/nfts/emerald-ape",
+      "profile": "mobile",
+      "run": 1,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 85,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 3510.611999999999,
+        "cumulative-layout-shift": 0.003220516934256627,
+        "total-blocking-time": 136.5
+      }
+    },
+    {
+      "page": "detail",
+      "path": "/nfts/emerald-ape",
+      "profile": "mobile",
+      "run": 2,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 85,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 3487.8199999999997,
+        "cumulative-layout-shift": 0.003220516934256627,
+        "total-blocking-time": 197.5
+      }
+    },
+    {
+      "page": "detail",
+      "path": "/nfts/emerald-ape",
+      "profile": "mobile",
+      "run": 3,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 83,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 3510.464,
+        "cumulative-layout-shift": 0,
+        "total-blocking-time": 235
+      }
+    },
+    {
+      "page": "detail",
+      "path": "/nfts/emerald-ape",
+      "profile": "desktop",
+      "run": 1,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 98,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 932.744,
+        "cumulative-layout-shift": 0.07340302950704841,
+        "total-blocking-time": 0
+      }
+    },
+    {
+      "page": "detail",
+      "path": "/nfts/emerald-ape",
+      "profile": "desktop",
+      "run": 2,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 98,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 884.644,
+        "cumulative-layout-shift": 0.07340302950704841,
+        "total-blocking-time": 0
+      }
+    },
+    {
+      "page": "detail",
+      "path": "/nfts/emerald-ape",
+      "profile": "desktop",
+      "run": 3,
+      "version": "12.6.1",
+      "scores": {
+        "performance": 97,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 952.292,
+        "cumulative-layout-shift": 0.07340302950704841,
+        "total-blocking-time": 0
+      }
+    }
+  ],
+  "medians": [
+    {
+      "page": "home",
+      "profile": "mobile",
+      "scores": {
+        "performance": 67,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 3212.47375,
+        "cumulative-layout-shift": 0,
+        "total-blocking-time": 1052.79475
+      }
+    },
+    {
+      "page": "home",
+      "profile": "desktop",
+      "scores": {
+        "performance": 85,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 1189.034,
+        "cumulative-layout-shift": 0.0000930916732335172,
+        "total-blocking-time": 268.5
+      }
+    },
+    {
+      "page": "detail",
+      "profile": "mobile",
+      "scores": {
+        "performance": 85,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 3510.464,
+        "cumulative-layout-shift": 0.003220516934256627,
+        "total-blocking-time": 197.5
+      }
+    },
+    {
+      "page": "detail",
+      "profile": "desktop",
+      "scores": {
+        "performance": 98,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92
+      },
+      "metrics": {
+        "largest-contentful-paint": 932.744,
+        "cumulative-layout-shift": 0.07340302950704841,
+        "total-blocking-time": 0
+      }
+    }
+  ]
+}
