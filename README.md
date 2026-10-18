@@ -6,7 +6,7 @@ Base inicial do desafio frontend. A marca **KURIO** foi preservada dos SVGs; o n
 
 Vite + React + TypeScript strict, TanStack Router/Query, Axios, Tailwind v4, componentes shadcn/ui adaptados, MSW, cliente Socket.IO real, Playwright, Vitest e infraestrutura Lighthouse. Há um catálogo de demonstração com quatro imagens originais e busca na URL, além de `/design-system` para experimentar os componentes, estados HTTP e eventos.
 
-**Não é a entrega completa do desafio.** Login, cadastro, sessão, catálogo, detalhes e favoritos estão implementados com mocks. Compra, edição de perfil, manutenção de carteiras e pedidos permanecem em desenvolvimento. Não há contas reais, cobrança ou integração blockchain.
+**Não é a entrega completa do desafio.** Login, cadastro, sessão, catálogo, detalhes e favoritos estão implementados com mocks. Carrinho, carteiras, checkout e pedidos simulados também estão implementados. Edição de perfil/avatar/senha e realtime privado de pedidos permanecem pendentes. Não há contas reais, cobrança ou integração blockchain.
 
 ## Executar
 
@@ -40,7 +40,7 @@ Veja `.env.example`; não há segredos nas variáveis `VITE_*`, que são públic
 | `VITE_SOCKET_URL` | origem da página; servidor Socket.IO quando sem mocks |
 | `VITE_MOCK_SCENARIO` | `default`, `empty`, `error` ou `slow`; aplicado no bootstrap |
 
-Em `/design-system`, use **Cenário MSW** para alternar sucesso, vazio, falha 503 ou latência de 1800 ms. Voltar a Sucesso restaura os dados. **Simular alteração de preço** altera a fixture via REST, emite `nft.updated` pelo binding MSW/Socket.IO e deixa o cliente invalidar a consulta. Não há setter de preço no componente. Recarregar a página reinicia o cenário configurado; os mocks iniciais são em memória, sem persistência de conta/carrinho.
+Em `/design-system`, use **Cenário MSW** para alternar sucesso, vazio, falha 503 ou latência de 1800 ms. Voltar a Sucesso restaura os dados. **Simular alteração de preço** altera a fixture via REST, emite `nft.updated` pelo binding MSW/Socket.IO e deixa o cliente invalidar a consulta. Não há setter de preço no componente. Recarregar a página reinicia o cenário de rede; contas, carrinhos e inventário têm persistência local conforme [CART_CHECKOUT.md](docs/CART_CHECKOUT.md).
 
 ## Testes e relatórios
 
@@ -78,7 +78,7 @@ Esta etapa não realiza deploy. Um futuro host estático deve servir `dist/`, pe
 
 ## Biblioteca de interface
 
-Acesse `/design-system` para explorar componentes, validação, layouts e estados de rede. `/account/profile` e `/account/wallets` demonstram a navegação do layout de conta; a edição continua pendente; acesso exige sessão. Consulte [guia do design system](docs/DESIGN_SYSTEM.md) e [validação desta feature](docs/DESIGN_SYSTEM_VALIDATION.md) para contratos de componentes, decisões baseadas nos SVGs e evidências.
+Acesse `/design-system` para explorar componentes, validação, layouts e estados de rede. `/account/profile` e `/account/wallets` demonstram a navegação do layout de conta; a edição de perfil continua pendente; carteiras podem ser cadastradas/editadas e o acesso exige sessão. Consulte [guia do design system](docs/DESIGN_SYSTEM.md) e [validação desta feature](docs/DESIGN_SYSTEM_VALIDATION.md) para contratos de componentes, decisões baseadas nos SVGs e evidências.
 
 ## Catálogo funcional
 
@@ -89,8 +89,18 @@ No laboratório, os cenários adicionais `race`, `offline` e `flaky` exercitam r
 O Playwright usa um worker por padrão para reduzir contenção entre processos Chromium. Os testes de concorrência continuam disparando requisições sobrepostas no navegador, sem alteração de timeout ou retries para esconder falhas.
 # Detalhes e favoritos
 
-Abra `/nfts/emerald-ape`; edições e quantidade podem ser preservadas por `?edition=fifty&quantity=4`. Galeria, estoque e favoritos usam REST/MSW; eventos de preço/estoque passam pelo Socket.IO real. Login e favoritos usam a mesma sessão: consulte [contrato de sessão, fixtures e limites de integração](docs/NFT_DETAILS.md). Comprar encaminha a seleção ao carrinho ainda em desenvolvimento. `npm run audit:lighthouse` agora mede início e detalhe, três vezes por perfil.
+Abra `/nfts/emerald-ape`; edições e quantidade podem ser preservadas por `?edition=fifty&quantity=4`. Galeria, estoque e favoritos usam REST/MSW; eventos de preço/estoque passam pelo Socket.IO real. Login e favoritos usam a mesma sessão: consulte [contrato de sessão, fixtures e limites de integração](docs/NFT_DETAILS.md). Comprar adiciona a edição ao carrinho; cotação, pagamento e recibo são simulados pela API. `npm run audit:lighthouse` agora mede início e detalhe, três vezes por perfil.
 
 ## Autenticação integrada
 
 Credenciais fictícias: `ana@example.com` ou `bruno@example.com`, senha `Collector123!`. `/register` permite criar conta local; apenas hash PBKDF2 e salt são persistidos nos mocks. Sessão dura 30 minutos, sobrevive a refresh e pode ser encerrada em Sair. No detalhe, Favoritar como visitante abre login preservando edição/quantidade; após entrar, confirme Favoritar. Trocar usuário limpa cache privado. `POST /api/demo/auth` com `{ "action": "reset" }` restaura contas/sessões; `/api/demo/details/reset` também limpa favoritos. Relatórios e limites: [autenticação integrada](docs/AUTHENTICATION_INTEGRATION.md).
+
+## Carrinho, carteiras e compra simulada
+
+No detalhe, selecione edição/quantidade e clique Comprar NFT. O carrinho persiste no refresh e é incorporado à conta após login. Cupom de demonstração: `KURIO10` (10%); `EXPIRED` representa cupom expirado. Totais são respostas da API com cálculo preciso em wei.
+
+Cadastre uma carteira em `/account/wallets`: endereço Ethereum fictício `0x1111111111111111111111111111111111111111`, MetaMask e identificações fictícias. No checkout, conecte a carteira, revise os dados e confirme. Cada pedido usa uma rede; separe itens de redes diferentes. Não há extensão real ou cobrança.
+
+O pedido começa pendente; somente confirmed abre recibo. Recusa preserva os itens. Timeout oferece recuperar a mesma tentativa, inclusive após refresh/login, sem gerar nova chave. O rascunho é isolado por usuário. Cenários: POST `/api/demo/commerce` com `{ "action": "declined" }`, `timeout`, `pending`, `settle`, `reject-connection`, `expire-quotes`, `expire-coupon`, `disconnect` ou `reset`; `confirmed` restaura o resultado padrão para novas criações.
+
+[Contratos e fluxo de comércio](docs/CART_CHECKOUT.md), [validação e evidências](docs/CART_CHECKOUT_VALIDATION.md). O stream público existente atualiza carrinho por REST; eventos privados e reconexão de pedidos aguardam `feature/realtime`. Por escolha do candidato, os PRs seguintes aguardam merge do carrinho; nenhum merge é automático.

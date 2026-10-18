@@ -118,3 +118,13 @@ Revise o código e execute os exemplos antes de defender a solução. O candidat
 5. **Decisões:** fonte única de sessão nos mocks evita divergência Node/browser. Resultado atrasado de logout só limpa sessão se token ainda coincidir. A proteção aguarda nova identidade ao trocar de aba. Senhas recebem salt e hash PBKDF2; a simulação local não constitui autenticação de produção.
 6. **Como testar:** `npm run test`, `npm run test:e2e`, `npm run audit:lighthouse`. O E2E `visitor logs in from favorite intent` usa formulário real e verifica retorno, refresh e outro usuário. Evidências finais em `docs/AUTHENTICATION_INTEGRATION.md`.
 7. **Defesa:** por que a chave de favoritos contém userId? Por que capturar token antes de uma operação assíncrona? Qual a diferença entre remover cache e revogar sessão? Como rollback evita um sucesso falso? Por que mocks precisam compartilhar armazenamento também no Node?
+
+## Carrinho, carteiras, checkout e pedidos
+
+1. **Implementação:** carrinho visitante/autenticado, merge, cupom, manutenção de duas carteiras, conexão simulada, revisão de cotação, envio idempotente e recibo confirmado.
+2. **Arquivos:** `features/commerce` contém contratos, validação, cliente REST, storage de rascunho e páginas; `mocks/cart`, `wallets`, `orders`, `commerce-store`, `inventory` e `commerce-http` separam domínio e rede; `lib/eth.ts` mantém precisão.
+3. **Fluxo:** detalhe → POST carrinho → GET e totais da API → login/merge → carteira conectada → POST cotação → revisão → POST pedido com chave persistida → polling GET → confirmed/declined. Só confirmed abre recibo e remove os itens comprados.
+4. **Tecnologias:** TanStack Router/Query, Axios, MSW, Socket.IO Client já existente, React/TypeScript, Tailwind/Radix e Playwright.
+5. **Decisões:** bigint evita erro financeiro decimal; estoque é separado por edição; fingerprint impede finalizar cotação antiga; chave idempotente recupera timeout; recibo copia snapshot; caches e rascunhos incluem usuário. Canais privados de Socket.IO aguardam a próxima branch, conforme sequência escolhida.
+6. **Como testar:** `npm run test` cobre contratos MSW e precisão; `npm run test:e2e` cobre UI. Cenários e credenciais estão em `docs/CART_CHECKOUT.md`. Os relatórios finais ficam em `docs/CART_CHECKOUT_VALIDATION.md`.
+7. **Defesa:** por que usar string e bigint para ETH? Por que não gerar nova chave após timeout? Como um pedido pode ser recuperado depois de uma cotação expirar? Como reservar/liberar uma edição sem afetar outra? Por que um recibo não consulta o preço atual? Qual diferença entre rascunho local, cache Query e banco MSW? O que ainda falta no realtime privado?

@@ -5,7 +5,7 @@ import hooks from 'eslint-plugin-react-hooks'
 import refresh from 'eslint-plugin-react-refresh'
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', 'public/mockServiceWorker.js', 'playwright-report/**', 'test-results/**', 'reports/**', 'coverage/**'] },
+  { ignores: ['dist/**', 'node_modules/**', 'public/mockServiceWorker.js', 'playwright-report/**', 'test-results/**', 'reports/**', 'docs/reports/**', 'coverage/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
