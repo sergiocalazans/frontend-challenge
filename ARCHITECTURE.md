@@ -97,3 +97,7 @@ O stream público existente invalida carrinho/catálogo e informa mudanças. Pol
 ## Perfil integrado à conta
 
 A rota /account/profile agora usa ProfilePage lazy, GET/PATCH /profile e POST /profile/password. Dados adicionais ficam no usuário de session-store; nome/e-mail são compartilhados com sessão/login. O apelido do perfil acompanha a carteira principal. Query privada por userId, token capturado e revalidação após latência/hashing protegem gravações. PBKDF2 é compartilhado com auth; senha nova revoga outras sessões e mantém a atual. Avatar é data URL limitada/validada, sem upload externo. ENS opcional e formulários com confirmações independentes são decisões de UX. Detalhes em docs/PROFILE.md; descrições antigas de placeholder de perfil são históricas e foram substituídas por esta implementação.
+
+## Preparação de deploy Vercel
+
+vercel.json aplica fallback SPA excluindo API/arquivos reservados, com headers para o worker. build:vercel chama o build demo com mocks forçados e gera metadados de commit/checksum, mantendo build:api separado. Registro do worker é absoluto na raiz; Socket.IO só é importado após sua ativação. preview:deployment é um ensaio estático local das regras, não emulador da plataforma. test:deployment testa URL fornecida e nunca publica. Contratos, execução e limites estão em docs/DEPLOYMENT.md. Sem URL pública, compatibilidade com Vercel/HTTPS permanece NOT TESTED.

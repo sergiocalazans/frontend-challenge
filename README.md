@@ -1,23 +1,20 @@
 # Jungle Gaming NFT Marketplace · Kurio
 
-Base inicial do desafio frontend. A marca **KURIO** foi preservada dos SVGs; o nome do projeto continua Jungle Gaming. Requisitos: [CHALLENGE.md](CHALLENGE.md). Referências: [especificação visual](design/DESIGN_SPEC.md) e [mapa de frames](design/FRAME_MAP.md).
+Marketplace com dados simulados em React/TypeScript/Vite. A marca KURIO vem dos SVGs. Requisitos: [CHALLENGE.md](CHALLENGE.md); [arquitetura](ARCHITECTURE.md); [defesa técnica](LEARNING.md).
 
-## O que esta etapa entrega
+Catálogo, detalhes, favoritos, autenticação, carrinho, carteiras, checkout, pedidos, perfil/avatar/senha e Socket.IO estão implementados. **Ainda não há URL pública nem validação na Vercel.** Fidelidade integral ao SVG e metas finais de performance não estão certificadas. [Preparação de deploy e evidências](docs/DEPLOYMENT.md), [perfil](docs/PROFILE.md), [auditoria E2E anterior](docs/E2E_AUDIT.md).
 
-Vite + React + TypeScript strict, TanStack Router/Query, Axios, Tailwind v4, componentes shadcn/ui adaptados, MSW, cliente Socket.IO real, Playwright, Vitest e infraestrutura Lighthouse. Há um catálogo de demonstração com quatro imagens originais e busca na URL, além de `/design-system` para experimentar os componentes, estados HTTP e eventos.
+## Setup e comandos
 
-**Não é a entrega completa do desafio.** Login, cadastro, sessão, catálogo, detalhes e favoritos estão implementados com mocks. Carrinho, carteiras, checkout e pedidos simulados também estão implementados. Perfil, avatar, alteração de senha e realtime privado de pedidos também estão implementados. Deploy público e auditoria integrada final permanecem pendentes. Não há contas reais, cobrança ou integração blockchain.
-
-## Executar
-
-Requer Node.js 22.12+ e npm. Validado com Node 22.18.0 e npm 10.9.3. O lockfile está versionado.
+Requer Node >=22.12 (validado em 22.18.0) e npm; use Node 22.x no projeto Vercel. Instale pelo lockfile:
 
 ```sh
-npm install
+npm ci
+npx playwright install chromium
 npm run dev
 ```
 
-Abra `http://127.0.0.1:5173`. O modo `demo` inicia o MSW antes de importar a aplicação e o Socket.IO. O navegador precisa suportar Service Worker; localhost e HTTPS são contextos válidos.
+Dev em http://127.0.0.1:5173; build otimizado em dist/. Service Worker exige localhost ou HTTPS. Não há dependência de backend privado, blockchain, extensão ou pagamento real. Use apenas dados fictícios.
 
 ```sh
 npm run typecheck
@@ -25,88 +22,90 @@ npm run lint
 npm test
 npm run build
 npm run preview
+npm run verify
+npm run test:e2e
+npm run test:visual
+npm run test:report
+npm run audit:lighthouse
+npm run audit:check
 ```
 
-Auditoria: `npm run verify` executa lint, unitários, build/typecheck e E2E em sequência. `npm run audit:lighthouse` gera as 12 medições e `npm run audit:check` verifica completude, medianas e metas com exit code. Playwright exporta HTML e JSON. Consulte [matriz de cobertura, resultados e limitações](docs/E2E_AUDIT.md). O PR de auditoria é independente do [PR #9 de realtime](https://github.com/sergiocalazans/frontend-challenge/pull/9); a combinação das branches exige nova validação em develop.
+build inclui typecheck e modo demo com mocks; preview usa 4173. verify encadeia lint, unitários, build e Playwright. build:api/dev:api desativam mocks por padrão e exigem backend compatível não fornecido. Ferramentas/MSW são necessários para construir: não instale somente dependências de produção antes do build.
 
-O preview serve o build otimizado em `http://127.0.0.1:4173`. **`build` inclui mocks** para demonstração. `build:api` e `dev:api` usam modo production, com mocks desativados por padrão; não existe backend real fornecido. Configure a URL REST/realtime antes de utilizá-los. Não se deve instalar apenas dependências de produção antes de construir: ferramentas e MSW são necessários no build.
+Playwright usa Chromium em 390/768/1440, um worker, zero retries locais, HTML em playwright-report/ e JSON em reports/playwright/results.json. Falhas/traces em test-results/. Baselines são da implementação, não do Figma; atualização requer revisão e repetição com baselines fixas. Lighthouse mede início/detalhe, mobile/desktop, três rodadas por combinação, com imagens/fontes/mocks; audit:check rejeita metas/medianas inválidas. Não execute Lighthouse junto aos E2E.
 
-## Variáveis e cenários
+## Variáveis
 
-Veja `.env.example`; não há segredos nas variáveis `VITE_*`, que são públicas no bundle.
+.env.demo já ativa a demonstração. .env.example documenta as opções; .env.local pode substituir valores locais. Variáveis VITE_* são públicas, nunca segredos.
 
-| Variável | Padrão / finalidade |
+| Variável | Demonstração |
 | --- | --- |
-| `VITE_ENABLE_MOCKS` | `true` em `.env.demo`; somente a string `true` ativa mocks |
-| `VITE_API_BASE_URL` | `/api`; os handlers de demonstração usam o prefixo `/api` |
-| `VITE_SOCKET_URL` | origem da página; servidor Socket.IO quando sem mocks |
-| `VITE_MOCK_SCENARIO` | `default`, `empty`, `error` ou `slow`; aplicado no bootstrap |
+| VITE_ENABLE_MOCKS | true |
+| VITE_API_BASE_URL | /api |
+| VITE_SOCKET_URL | vazio: origem atual; não use localhost no deploy |
+| VITE_MOCK_SCENARIO | default; também empty/error/slow/race/offline/flaky |
 
-Em `/design-system`, use **Cenário MSW** para alternar sucesso, vazio, falha 503 ou latência de 1800 ms. Voltar a Sucesso restaura os dados. **Simular alteração de preço** altera a fixture via REST, emite `nft.updated` pelo binding MSW/Socket.IO e deixa o cliente invalidar a consulta. Não há setter de preço no componente. Recarregar a página reinicia o cenário de rede; contas, carrinhos e inventário têm persistência local conforme [CART_CHECKOUT.md](docs/CART_CHECKOUT.md).
+main.tsx aguarda worker.start antes de importar aplicação e Socket.IO. O worker está em public/mockServiceWorker.js e é copiado para dist/mockServiceWorker.js, registrado em /mockServiceWorker.js com scope / e updateViaCache none.
 
-## Testes e relatórios
+## Demonstração
+
+Ana: ana@example.com; Bruno: bruno@example.com. Senha fictícia: Collector123!. Cadastro local em /register; sessão dura 30 minutos, sobrevive a refresh e Sair limpa cache privado/subscriptions. Senhas são persistidas como hash PBKDF2/salt.
+
+Busque e filtre em /; URL preserva página/ordenação/histórico. Em /nfts/emerald-ape, escolha edição/quantidade, favorite ou compre. Visitante entra e retorna à seleção; confirme Favoritar após login. /cart persiste e é incorporado à conta uma vez; KURIO10 concede 10%, EXPIRED demonstra expiração.
+
+Cadastre uma carteira em /account/wallets. Exemplo Ethereum fictício: 0x1111111111111111111111111111111111111111, MetaMask e demais identificações fictícias. No checkout, conecte, selecione a rede, preencha colecionador, revise e confirme. Cada pedido usa uma rede compatível com todos os itens. Totais vêm da cotação REST precisa em wei.
+
+Pending é recuperado por Socket.IO/REST e polling de segurança de 15 s; só confirmed abre recibo snapshot. Declined preserva itens; timeout oferece recuperar a mesma tentativa/chave sem duplicar compra. Perfil em /account/profile salva dados, avatar PNG/JPEG/WebP até 256 KiB e senha em formulários independentes. Alterar senha encerra outras sessões, mantendo a atual. Avatar selecionado/removido só persiste ao salvar.
+
+## Cenários e reset dos mocks
+
+Em /design-system, Cenário MSW alterna sucesso/vazio/erro/lento; Simular alteração de preço passa pelo protocolo Socket.IO. Também é possível enviar POST no console da aplicação:
+
+```js
+await fetch('/api/demo/scenario', {
+  method: 'POST', headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({scenario: 'slow'})
+})
+```
+
+| Endpoint POST | Payload |
+| --- | --- |
+| /api/demo/scenario | scenario: default, empty, error (503), slow (1800 ms), race, offline, flaky |
+| /api/demo/auth | action: expire ou reset; reset restaura também perfis/senhas |
+| /api/demo/details/reset | limpa favoritos e cenários de detalhe |
+| /api/demo/commerce | action: confirmed, declined, timeout, pending, settle, reject-connection, disconnect, expire-quotes, expire-coupon, reset |
+| /api/demo/nfts/emerald-ape/update | {} alterna preço; {available:0} esgota e emite nft.updated |
+| /api/demo/realtime | {action:'disconnect'} interrompe 1500 ms; duplicate/stale com orderId reproduzem eventos |
+
+Para timeout, configure antes de confirmar: o mock cria pedido e demora 11 s na primeira resposta (Axios limita 10 s). Use Recuperar pedido, inclusive após refresh. Para interrupção, configure pending, confirme, dispare disconnect e depois settle; deve recuperar o mesmo pedido. Sequências executáveis estão em tests/e2e/commerce.spec.ts e realtime.spec.ts.
+
+Sem compra em andamento, reset conhecido: commerce reset → details/reset → auth reset → scenario default → refresh. Essa sequência apaga somente dados fictícios e restaura os recursos implementados; um contexto de navegador novo também é isolado. Cenário de rede volta ao valor configurado no bootstrap; para observá-lo, navegue por links sem recarregar. Storage é local ao navegador, sem transações entre abas.
+
+## Vercel — executar somente após autorização
+
+Importar o repositório na Vercel pode iniciar publicação automaticamente. Esta preparação não cria projeto remoto nem dispara deploy. Após autorização, escolha o commit/branch aprovado, root ./, preset Vite, Node 22.x, instalação npm ci, build npm run build:vercel e saída dist. Cadastre as variáveis de demonstração acima em Preview/Production. O script força VITE_ENABLE_MOCKS=true, mesmo se o ambiente tiver outro valor, e gera build-info.json com SHA, estado Git e checksum do worker. build:api continua separado.
+
+vercel.json fornece fallback SPA para rotas da aplicação; exclui /api e assets/imagens/worker/metadados. Rotas reais futuras de API não são reescritas para HTML. Arquivos existentes têm precedência no filesystem. Worker recebe Cache-Control no-cache/no-store e Service-Worker-Allowed /. Sem API real neste repositório, requisição /api não interceptada deve falhar, não retornar index.html.
+
+Ensaio local, sem publicação:
 
 ```sh
-npx playwright install chromium
-npm run build
-npm run test:e2e
-npm run test:report
-npm run test:visual
-npm run audit:lighthouse
+npm run build:vercel
+npm run preview:deployment
 ```
 
-Playwright inicia o preview automaticamente e testa Chromium em 390, 768 e 1440 px. Cada teste recebe contexto/worker MSW isolado. O relatório HTML fica em `playwright-report/`; screenshots e traces de falhas em `test-results/`. Baselines em `tests/e2e/` verificam regressões desta base, **não certificam fidelidade ao Figma**. Para atualizar intencionalmente: `npm run test:visual -- --update-snapshots`, seguido de revisão visual e nova execução sem atualização. Baselines produzidas em Windows podem diferir em outro SO.
+Em outro PowerShell:
 
-Vitest testa REST pelos handlers MSW e o cliente Socket.IO real, incluindo versões antigas, duplicatas e cleanup. Os testes atuais não cobrem os 12 grupos completos do desafio: o escopo ainda é configuração/design system.
+```powershell
+$env:DEPLOYMENT_URL = 'http://127.0.0.1:4177'
+$env:DEPLOYMENT_EXPECTED_SHA = git rev-parse HEAD
+npm run test:deployment
+```
 
-Lighthouse inicia outro preview em 4175, utiliza o Chromium do Playwright e gera três medições mobile + três desktop da página inicial em `reports/lighthouse/`, incluindo HTML, JSON e medianas. O detalhe real ainda não existe; sua auditoria será adicionada após implementação. Resultados e limites desta execução: [VALIDATION.md](docs/VALIDATION.md).
+O servidor local aplica o subconjunto de rewrites/headers usado aqui; não é Vercel CLI nem infraestrutura Vercel. O teste cobre worker/checksum/headers, deep links/refresh, perfil/carteiras/sessão/carrinho e compra com preço alterado, interrupção Socket.IO e recuperação, além de cenários determinísticos. Relatórios HTML/JSON em reports/deployment/; evidências versionadas em docs/reports/vercel/.
 
-## Estrutura e materiais de defesa
+**Após deploy autorizado**, substitua DEPLOYMENT_URL pela URL HTTPS pública e DEPLOYMENT_EXPECTED_SHA pela SHA completa implantada, e execute o mesmo comando. Ele não faz deploy. Registre URL/SHA/data, resultados e traces; verifique acesso público sem proteção de preview. A versão publicada precisa corresponder ao código entregue. Até essa execução, worker/Socket.IO/refresh na Vercel permanecem NOT TESTED, mesmo com ensaio local aprovado.
 
-- `src/app`: inicialização, providers, router e política de cache.
-- `src/features`: catálogo e laboratório do design system, com contratos/API separados.
-- `src/components/ui`: fonte gerada pelo shadcn/ui, adaptada aos tokens.
-- `src/components/shared` e `layout`: composições reutilizáveis e layout.
-- `src/lib`: HTTP, ambiente e ciclo de vida realtime.
-- `src/mocks`: fixtures, estado, handlers REST e Socket.IO.
-- `src/styles`: tokens confirmados e decisões responsivas.
-- `tests`: integração e E2E; `scripts`: extração de assets e auditoria.
+## Design e materiais
 
-[ARCHITECTURE.md](ARCHITECTURE.md) explica contratos e decisões. [LEARNING.md](LEARNING.md) orienta a defesa técnica. `npm run assets:extract` reproduz as quatro imagens WebP individuais a partir da prancha original, sem modificá-la. Nenhum SVG de tela inteira é servido como interface.
-
-## Publicação
-
-Esta etapa não realiza deploy. Um futuro host estático deve servir `dist/`, permitir Service Workers e redirecionar rotas da SPA para `index.html`. O PR tem destino `develop`; merge e publicação dependem de autorização.
-
-## Biblioteca de interface
-
-Acesse `/design-system` para explorar componentes, validação, layouts e estados de rede. `/account/profile` e `/account/wallets` demonstram a navegação do layout de conta; a edição de perfil continua pendente; carteiras podem ser cadastradas/editadas e o acesso exige sessão. Consulte [guia do design system](docs/DESIGN_SYSTEM.md) e [validação desta feature](docs/DESIGN_SYSTEM_VALIDATION.md) para contratos de componentes, decisões baseadas nos SVGs e evidências.
-
-## Catálogo funcional
-
-O início permite buscar por nome, combinar categoria/rede/faixa ETH, ordenar e paginar. A URL preserva essa combinação no refresh e no histórico. Existem 24 NFTs simulados, com nove itens por página e quatro imagens locais reutilizadas. Os cards navegam para a rota de detalhe, com galeria, edições, quantidade e favoritos.
-
-No laboratório, os cenários adicionais `race`, `offline` e `flaky` exercitam respostas fora de ordem, falha de conexão e recuperação. Selecione um cenário e volte ao início pelos links internos; refresh reinicia o cenário configurado em `VITE_MOCK_SCENARIO`. `race` atrasa a busca exata Emerald; `flaky` falha nas duas primeiras consultas do cenário. Consulte [guia do catálogo](docs/CATALOG.md) e [resultados desta feature](docs/CATALOG_VALIDATION.md).
-
-O Playwright usa um worker por padrão para reduzir contenção entre processos Chromium. Os testes de concorrência continuam disparando requisições sobrepostas no navegador, sem alteração de timeout ou retries para esconder falhas.
-# Detalhes e favoritos
-
-Abra `/nfts/emerald-ape`; edições e quantidade podem ser preservadas por `?edition=fifty&quantity=4`. Galeria, estoque e favoritos usam REST/MSW; eventos de preço/estoque passam pelo Socket.IO real. Login e favoritos usam a mesma sessão: consulte [contrato de sessão, fixtures e limites de integração](docs/NFT_DETAILS.md). Comprar adiciona a edição ao carrinho; cotação, pagamento e recibo são simulados pela API. `npm run audit:lighthouse` agora mede início e detalhe, três vezes por perfil.
-
-## Autenticação integrada
-
-Credenciais fictícias: `ana@example.com` ou `bruno@example.com`, senha `Collector123!`. `/register` permite criar conta local; apenas hash PBKDF2 e salt são persistidos nos mocks. Sessão dura 30 minutos, sobrevive a refresh e pode ser encerrada em Sair. No detalhe, Favoritar como visitante abre login preservando edição/quantidade; após entrar, confirme Favoritar. Trocar usuário limpa cache privado. `POST /api/demo/auth` com `{ "action": "reset" }` restaura contas/sessões; `/api/demo/details/reset` também limpa favoritos. Relatórios e limites: [autenticação integrada](docs/AUTHENTICATION_INTEGRATION.md).
-
-## Carrinho, carteiras e compra simulada
-
-No detalhe, selecione edição/quantidade e clique Comprar NFT. O carrinho persiste no refresh e é incorporado à conta após login. Cupom de demonstração: `KURIO10` (10%); `EXPIRED` representa cupom expirado. Totais são respostas da API com cálculo preciso em wei.
-
-Cadastre uma carteira em `/account/wallets`: endereço Ethereum fictício `0x1111111111111111111111111111111111111111`, MetaMask e identificações fictícias. No checkout, conecte a carteira, revise os dados e confirme. Cada pedido usa uma rede; separe itens de redes diferentes. Não há extensão real ou cobrança.
-
-O pedido começa pendente; somente confirmed abre recibo. Recusa preserva os itens. Timeout oferece recuperar a mesma tentativa, inclusive após refresh/login, sem gerar nova chave. O rascunho é isolado por usuário. Cenários: POST `/api/demo/commerce` com `{ "action": "declined" }`, `timeout`, `pending`, `settle`, `reject-connection`, `expire-quotes`, `expire-coupon`, `disconnect` ou `reset`; `confirmed` restaura o resultado padrão para novas criações.
-
-[Contratos e fluxo de comércio](docs/CART_CHECKOUT.md), [validação e evidências do carrinho](docs/CART_CHECKOUT_VALIDATION.md). O stream público atualiza o carrinho por REST. [Realtime privado e reconexão](docs/REALTIME.md) usam `orders.subscribe` autenticado, `order.updated` e reconciliação REST, com polling de segurança de 15 s. Para simular interrupção, POST `/api/demo/realtime` com `{ "action": "disconnect" }`; para duplicatas/eventos antigos, use `duplicate` ou `stale` e `orderId`. Nenhum cenário altera diretamente a UI. Os PRs de realtime e auditoria são independentes de develop; sua integração depende de merge autorizado.
-
-## Perfil, avatar e senha
-
-Em /account/profile, edite os dados e salve. Nome/e-mail são os mesmos da sessão; o apelido acompanha a carteira principal quando cadastrada. Avatar aceita PNG/JPEG/WebP de até 256 KiB; selecionar/remover exige Salvar perfil. Alterar senha usa formulário independente, valida a senha atual e encerra outras sessões; a sessão atual permanece válida. Alterações confirmadas sobrevivem a refresh. O reset de autenticação também restaura perfil e senha. [Contratos, validação e limites](docs/PROFILE.md).
+[Mapa de frames](design/FRAME_MAP.md) e [especificação](design/DESIGN_SPEC.md) documentam os SVGs preservados. Assets são quatro imagens originais WebP e fonte local IBM Plex Mono substituta. Não há SVG de tela inteira no lugar de interface funcional. Fonte, composição mobile, navegação/footer e confirmações têm desvios documentados; baselines não certificam fidelidade integral. `npm run assets:extract` reproduz os assets individuais. Estrutura por funcionalidades em src/features/, componentes em src/components/, contratos/transporte separados de src/mocks/.
