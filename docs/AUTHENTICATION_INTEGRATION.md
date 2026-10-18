@@ -54,7 +54,7 @@ As medianas atendem às quatro metas do CHALLENGE para ambas as páginas/perfis.
 - `src/mocks/auth.ts`, `session-store.ts` (substitui `detail-session-bridge.ts`), `details.ts`, `handlers.ts`: REST, banco e cenários.
 - `src/lib/http.ts`, `src/app/router.tsx`, `src/components/layout/app-shell.tsx`, `src/features/catalog/catalog-page.tsx`: headers, proteção, shell e fundo do modal.
 - `tests/unit/{auth.test,details.test,setup}.ts`, `tests/e2e/{auth-helpers,auth.spec,design-system.spec,setup.spec}.ts` e snapshots: integração e regressão.
-- `README.md`, `ARCHITECTURE.md`, `LEARNING.md`, documentos de autenticação/detalhes e `docs/reports/authentication-{session,integration}`: explicação e evidências (históricas e atuais separadas).
+- `README.md`, `ARCHITECTURE.md`, documentos de autenticação/detalhes e `docs/reports/authentication-{session,integration}`: explicação e evidências (históricas e atuais separadas).
 
 ## Histórico separado
 

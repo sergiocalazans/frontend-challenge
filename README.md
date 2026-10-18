@@ -1,100 +1,251 @@
-# Jungle Gaming NFT Marketplace · Kurio
+# Kurio — NFT Marketplace
 
-Marketplace com dados simulados em React/TypeScript/Vite. A marca KURIO vem dos SVGs. Requisitos: [CHALLENGE.md](CHALLENGE.md); [arquitetura](ARCHITECTURE.md); [defesa técnica](LEARNING.md).
+Implementação do desafio frontend da Jungle Gaming, com os fluxos de descoberta, compra e conta do colecionador. A interface usa a identidade visual Kurio dos arquivos fornecidos no desafio.
 
-Catálogo, detalhes, favoritos, autenticação, carrinho, carteiras, checkout, pedidos, perfil/avatar/senha e Socket.IO estão implementados. **[Demonstração pública](https://frontend-challenge-pi-six.vercel.app/)**: 12/12 testes de deploy aprovados em 18/10/2026, SHA 58188fc; suíte completa local 162/162. Persistência é local ao navegador e todos os dados/transações são fictícios. Fidelidade integral ao SVG e metas de performance mobile continuam pendentes. [Auditoria final](DELIVERY_REPORT.md), [deploy e evidências](docs/DEPLOYMENT.md), [perfil](docs/PROFILE.md), [auditoria E2E histórica](docs/E2E_AUDIT.md).
+**[Acessar a demonstração](https://frontend-challenge-pi-six.vercel.app/)** · [Requisitos](CHALLENGE.md) · [Arquitetura](ARCHITECTURE.md) · [Relatório de testes e auditoria](DELIVERY_REPORT.md)
 
-## Setup e comandos
+A aplicação funciona com APIs e eventos simulados na camada de rede. Não é necessário conectar uma carteira real, instalar extensões ou configurar um backend. Contas, saldos e transações são fictícios; os dados ficam no navegador e permanecem após atualizar a página.
 
-Requer Node >=22.12 (validado em 22.18.0) e npm; use Node 22.x no projeto Vercel. Instale pelo lockfile:
+## O que está implementado
+
+- Catálogo com busca, filtros combinados, ordenação e paginação na URL.
+- Detalhes do NFT, galeria, seleção de edição e quantidade, favoritos e disponibilidade.
+- Cadastro, login, logout, expiração de sessão e retorno ao fluxo anterior.
+- Carrinho persistente, incorporação dos itens do visitante ao fazer login e aplicação de cupons.
+- Checkout com seleção de carteira e rede, cotação, revisão e confirmação do pedido.
+- Recuperação de pedidos após timeout, refresh ou reconexão, sem criar outra compra.
+- Perfil com edição de dados, avatar e senha, além de carteiras principal e secundária.
+- Atualização de preço, estoque e pedido pelo cliente Socket.IO, com reconciliação via REST.
+
+As telas têm estados de carregamento, vazio, erro e recuperação. Os layouts e testes cobrem 390, 768 e 1440 pixels.
+
+## Rodando localmente
+
+Requisitos: **Node.js 22.12 ou superior** e npm. A versão usada na validação foi Node 22.18.0.
 
 ```sh
+git clone https://github.com/sergiocalazans/frontend-challenge.git
+cd frontend-challenge
 npm ci
-npx playwright install chromium
 npm run dev
 ```
 
-Dev em http://127.0.0.1:5173; build otimizado em dist/. Service Worker exige localhost ou HTTPS. Não há dependência de backend privado, blockchain, extensão ou pagamento real. Use apenas dados fictícios.
+Abra [http://127.0.0.1:5173](http://127.0.0.1:5173). Os mocks já estão habilitados pelo arquivo `.env.demo`.
+
+Para executar o build de produção localmente:
 
 ```sh
-npm run typecheck
-npm run lint
-npm test
 npm run build
 npm run preview
+```
+
+O preview fica em [http://127.0.0.1:4173](http://127.0.0.1:4173). O build inclui a verificação de tipos e mantém os mocks da demonstração. O Service Worker precisa de localhost ou HTTPS.
+
+## Testando a demonstração
+
+Use uma das contas abaixo ou crie uma conta em `/register`.
+
+| Conta | E-mail | Senha |
+| --- | --- | --- |
+| Ana | `ana@example.com` | `Collector123!` |
+| Bruno | `bruno@example.com` | `Collector123!` |
+
+Um caminho para conhecer os fluxos:
+
+1. Busque um NFT no catálogo, combine filtros e navegue entre as páginas. A URL preserva a consulta ao atualizar ou voltar pelo histórico.
+2. Abra o **Emerald Ape**, escolha uma edição e adicione ao carrinho. O cupom `KURIO10` aplica 10% de desconto; `EXPIRED` permite testar um cupom vencido.
+3. Entre com uma conta e cadastre uma carteira em `/account/wallets`. Para testar Ethereum, use o endereço fictício `0x1111111111111111111111111111111111111111` e o provedor MetaMask.
+4. Vá ao checkout, simule a conexão da carteira, confira a rede e os dados do colecionador. Revise os valores antes de confirmar.
+5. Após a confirmação, atualize a página do pedido. O recibo deve manter os itens e valores da compra, mesmo que o catálogo mude depois.
+
+Favoritos, checkout, perfil, carteiras e pedidos exigem login. A sessão dura 30 minutos e é recuperada após refresh. Ao sair ou trocar de conta, o cache privado e as assinaturas de eventos da sessão anterior são limpos.
+
+Em `/account/profile`, é possível alterar dados, avatar e senha. O avatar aceita PNG, JPEG ou WebP de até 256 KiB e só é persistido ao salvar. A troca de senha encerra as outras sessões da conta. As senhas da simulação são armazenadas como hash PBKDF2 com salt.
+
+## Tecnologias e organização
+
+| Responsabilidade | Tecnologia |
+| --- | --- |
+| Interface e build | React, TypeScript strict e Vite |
+| Rotas e estado na URL | TanStack Router |
+| Consultas, mutations e cache | TanStack Query |
+| Comunicação REST | Axios |
+| Estilos e componentes | Tailwind CSS, shadcn/ui e Radix |
+| APIs simuladas | MSW |
+| Eventos | Socket.IO Client e `@mswjs/socket.io-binding` |
+| Testes | Vitest e Playwright |
+| Auditoria | Lighthouse |
+
+```text
+src/
+  app/          # Rotas, providers e configuração do cache
+  components/   # Componentes de interface, layouts e elementos compartilhados
+  features/     # Catálogo, detalhes, autenticação, perfil e comércio
+  lib/          # HTTP, ambiente, cálculos em ETH e ciclo de vida do socket
+  mocks/        # Handlers REST, eventos, fixtures e persistência simulada
+  styles/       # Tokens e estilos globais
+tests/
+  unit/         # Regras de negócio e integração com MSW/Socket.IO
+  e2e/          # Fluxos completos e regressão visual
+  deployment/   # Verificação do build local ou da URL publicada
+design/         # SVGs originais, mapa dos frames e especificação visual
+docs/           # Contratos, decisões e relatórios de execução
+scripts/        # Build, extração de assets e auditorias
+```
+
+As chamadas saem dos módulos de cada funcionalidade, passam pelo Axios e chegam aos handlers MSW. O TanStack Query mantém o cache separado por consulta e usuário. Os componentes não contêm respostas fictícias.
+
+REST é a fonte de verdade. Eventos Socket.IO invalidam as consultas afetadas; após reconectar, o cliente busca o estado atual pela API. O checkout usa uma chave de idempotência para recuperar a mesma tentativa após timeout e só exibe o recibo quando a API confirma o pedido. Valores em ETH trafegam como strings e são calculados com `bigint`.
+
+O transporte Socket.IO é interceptado no navegador pelo MSW. O cliente usa o protocolo real, mas a demonstração não depende de um servidor de eventos externo. As decisões de sessão, cache, retries e reconciliação estão em [ARCHITECTURE.md](ARCHITECTURE.md).
+
+## Variáveis de ambiente
+
+A configuração padrão está em `.env.demo`. Use `.env.example` como referência e `.env.local` para ajustes locais.
+
+| Variável | Valor padrão | Uso |
+| --- | --- | --- |
+| `VITE_ENABLE_MOCKS` | `true` no modo demo | Habilita MSW e os eventos simulados |
+| `VITE_API_BASE_URL` | `/api` | Prefixo das chamadas REST |
+| `VITE_SOCKET_URL` | Vazio | Usa a origem atual; não apontar para localhost no deploy |
+| `VITE_MOCK_SCENARIO` | `default` | Cenário inicial de rede |
+
+Variáveis `VITE_*` são expostas no navegador. Não coloque segredos nelas.
+
+`npm run dev:api` e `npm run build:api` usam o modo de produção sem mocks por padrão e precisam de um backend compatível, que não faz parte deste repositório. Verifique os overrides em `.env.local` antes de usar esse modo.
+
+## Cenários de falha e reset
+
+A página `/design-system` oferece controles para alternar os cenários de rede e simular uma mudança de preço. Para testar casos específicos, abra o console do navegador com a aplicação carregada e use:
+
+```js
+const demo = async (path, payload = {}) => {
+  const response = await fetch(`/api/demo/${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  if (!response.ok) throw new Error(`Falha no cenário: ${response.status}`)
+  return response.json()
+}
+
+await demo('scenario', { scenario: 'slow' })
+```
+
+Depois de definir o helper acima, execute o comando do cenário desejado:
+
+| Cenário | Comando |
+| --- | --- |
+| Resposta vazia, erro ou lentidão | `await demo('scenario', { scenario: 'empty' })` — também aceita `default`, `error`, `slow`, `race`, `offline` e `flaky` |
+| Sessão expirada | `await demo('auth', { action: 'expire' })` |
+| Pagamento recusado | `await demo('commerce', { action: 'declined' })` |
+| Timeout após criar o pedido | `await demo('commerce', { action: 'timeout' })` |
+| Manter o pedido pendente | `await demo('commerce', { action: 'pending' })` |
+| Concluir pedidos pendentes | `await demo('commerce', { action: 'settle' })` |
+| Recusar conexão da carteira | `await demo('commerce', { action: 'reject-connection' })` |
+| Expirar o cupom durante a revisão | `await demo('commerce', { action: 'expire-coupon' })` |
+| Alterar o preço do Emerald Ape | `await demo('nfts/emerald-ape/update')` |
+| Esgotar o NFT | `await demo('nfts/emerald-ape/update', { available: 0 })` |
+| Interromper o Socket.IO | `await demo('realtime', { action: 'disconnect' })` |
+
+Defina o modo de pagamento antes de confirmar a compra. No cenário `timeout`, o pedido é criado, mas a primeira resposta demora 11 segundos; o cliente HTTP encerra a espera em 10 segundos. A ação **Recuperar pedido** deve retornar a mesma compra, inclusive após refresh.
+
+Para testar reconexão, configure `pending`, confirme a compra, interrompa o socket e execute `settle`. O pedido deve ser recuperado sem outro envio. Os testes em [commerce.spec.ts](tests/e2e/commerce.spec.ts) e [realtime.spec.ts](tests/e2e/realtime.spec.ts) mostram essas sequências e os casos de eventos duplicados ou antigos.
+
+Para voltar ao estado inicial, termine a compra em andamento e execute, no mesmo console:
+
+```js
+await demo('commerce', { action: 'reset' })
+await demo('details/reset')
+await demo('auth', { action: 'reset' })
+await demo('scenario', { scenario: 'default' })
+location.reload()
+```
+
+O reset restaura as contas, senhas, perfis, carteiras, carrinhos e pedidos fictícios, além do catálogo e dos favoritos. O cenário de rede volta ao valor configurado no bootstrap ao recarregar; para observar um cenário selecionado pelo console, navegue pelos links da aplicação. Cada origem tem seu próprio armazenamento, portanto os dados de localhost não são compartilhados com a Vercel.
+
+## Testes e comandos
+
+Instale o Chromium antes de rodar os testes de navegador:
+
+```sh
+npx playwright install chromium
 npm run verify
-npm run test:e2e
-npm run test:visual
-npm run test:report
+```
+
+`verify` executa lint, testes unitários, build e Playwright, nessa ordem. Também é possível rodar cada etapa separadamente:
+
+| Comando | O que executa |
+| --- | --- |
+| `npm run typecheck` | Verificação de tipos |
+| `npm run lint` | ESLint, sem tolerância a warnings |
+| `npm test` | Testes unitários e de integração |
+| `npm run build` | Typecheck e build de demonstração |
+| `npm run test:e2e` | Fluxos E2E e comparações visuais |
+| `npm run test:visual` | Somente os testes marcados como visuais |
+| `npm run test:report` | Abre o relatório HTML do Playwright |
+| `npm run audit:lighthouse` | Três medições de início e detalhe, em mobile e desktop |
+| `npm run audit:check` | Confere as medianas e as metas do desafio |
+| `npm run assets:extract` | Reproduz a extração dos assets dos SVGs |
+
+O Playwright usa Chromium em três viewports, com um worker e sem retries locais. O relatório HTML fica em `playwright-report/`, o JSON em `reports/playwright/results.json` e os traces das falhas em `test-results/`. As baselines visuais representam a implementação e não uma comparação automática com o Figma.
+
+Para o Lighthouse, gere o build primeiro e execute as medições sem rodar Playwright ao mesmo tempo:
+
+```sh
+npm run build
 npm run audit:lighthouse
 npm run audit:check
 ```
 
-build inclui typecheck e modo demo com mocks; preview usa 4173. verify encadeia lint, unitários, build e Playwright. build:api/dev:api desativam mocks por padrão e exigem backend compatível não fornecido. Ferramentas/MSW são necessários para construir: não instale somente dependências de produção antes do build.
+### Resultados registrados em 18/10/2026
 
-Playwright usa Chromium em 390/768/1440, um worker, zero retries locais, HTML em playwright-report/ e JSON em reports/playwright/results.json. Falhas/traces em test-results/. Baselines são da implementação, não do Figma; atualização requer revisão e repetição com baselines fixas. Lighthouse mede início/detalhe, mobile/desktop, três rodadas por combinação, com imagens/fontes/mocks; audit:check rejeita metas/medianas inválidas. Não execute Lighthouse junto aos E2E.
-
-## Variáveis
-
-.env.demo já ativa a demonstração. .env.example documenta as opções; .env.local pode substituir valores locais. Variáveis VITE_* são públicas, nunca segredos.
-
-| Variável | Demonstração |
+| Verificação | Resultado |
 | --- | --- |
-| VITE_ENABLE_MOCKS | true |
-| VITE_API_BASE_URL | /api |
-| VITE_SOCKET_URL | vazio: origem atual; não use localhost no deploy |
-| VITE_MOCK_SCENARIO | default; também empty/error/slow/race/offline/flaky |
+| Typecheck, lint e build | Aprovados |
+| Unitários e integração | 50/50 |
+| Playwright completo local | 162/162 |
+| Testes de deploy local | 12/12 |
+| Testes na URL pública | 12/12 |
 
-main.tsx aguarda worker.start antes de importar aplicação e Socket.IO. O worker está em public/mockServiceWorker.js e é copiado para dist/mockServiceWorker.js, registrado em /mockServiceWorker.js com scope / e updateViaCache none.
+A suíte local completa foi executada no código `18addfc`. A URL pública foi validada na versão `58188fc`, com a mesma árvore de código. Os testes públicos cobriram deep links, refresh, worker MSW, persistência, checkout e recuperação Socket.IO. Não houve falhas, testes ignorados ou resultados instáveis nessas rodadas finais.
 
-## Demonstração
+Medianas das três medições Lighthouse por página e perfil, feitas no build de produção local:
 
-Ana: ana@example.com; Bruno: bruno@example.com. Senha fictícia: Collector123!. Cadastro local em /register; sessão dura 30 minutos, sobrevive a refresh e Sair limpa cache privado/subscriptions. Senhas são persistidas como hash PBKDF2/salt.
+| Página | Perfil | Performance | Acessibilidade | Boas práticas | SEO |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Início | Mobile | 77 | 100 | 100 | 92 |
+| Início | Desktop | 100 | 100 | 100 | 92 |
+| Detalhe | Mobile | 84 | 100 | 100 | 92 |
+| Detalhe | Desktop | 98 | 100 | 100 | 92 |
 
-Busque e filtre em /; URL preserva página/ordenação/histórico. Em /nfts/emerald-ape, escolha edição/quantidade, favorite ou compre. Visitante entra e retorna à seleção; confirme Favoritar após login. /cart persiste e é incorporado à conta uma vez; KURIO10 concede 10%, EXPIRED demonstra expiração.
+A meta de performance mobile é 90 e não foi atingida. Por isso, `audit:check` retornou erro nessa execução. Os relatórios, LCP/CLS/TBT, ambiente e análise dos gargalos estão em [DELIVERY_REPORT.md](DELIVERY_REPORT.md) e [docs/reports/delivery](docs/reports/delivery). Essas notas não são medições da rede da Vercel.
 
-Cadastre uma carteira em /account/wallets. Exemplo Ethereum fictício: 0x1111111111111111111111111111111111111111, MetaMask e demais identificações fictícias. No checkout, conecte, selecione a rede, preencha colecionador, revise e confirme. Cada pedido usa uma rede compatível com todos os itens. Totais vêm da cotação REST precisa em wei.
+## Deploy na Vercel
 
-Pending é recuperado por Socket.IO/REST e polling de segurança de 15 s; só confirmed abre recibo snapshot. Declined preserva itens; timeout oferece recuperar a mesma tentativa/chave sem duplicar compra. Perfil em /account/profile salva dados, avatar PNG/JPEG/WebP até 256 KiB e senha em formulários independentes. Alterar senha encerra outras sessões, mantendo a atual. Avatar selecionado/removido só persiste ao salvar.
+O repositório já contém `vercel.json`. Configure o projeto com:
 
-## Cenários e reset dos mocks
-
-Em /design-system, Cenário MSW alterna sucesso/vazio/erro/lento; Simular alteração de preço passa pelo protocolo Socket.IO. Também é possível enviar POST no console da aplicação:
-
-```js
-await fetch('/api/demo/scenario', {
-  method: 'POST', headers: {'Content-Type': 'application/json'},
-  body: JSON.stringify({scenario: 'slow'})
-})
-```
-
-| Endpoint POST | Payload |
+| Opção | Valor |
 | --- | --- |
-| /api/demo/scenario | scenario: default, empty, error (503), slow (1800 ms), race, offline, flaky |
-| /api/demo/auth | action: expire ou reset; reset restaura também perfis/senhas |
-| /api/demo/details/reset | limpa favoritos e cenários de detalhe |
-| /api/demo/commerce | action: confirmed, declined, timeout, pending, settle, reject-connection, disconnect, expire-quotes, expire-coupon, reset |
-| /api/demo/nfts/emerald-ape/update | {} alterna preço; {available:0} esgota e emite nft.updated |
-| /api/demo/realtime | {action:'disconnect'} interrompe 1500 ms; duplicate/stale com orderId reproduzem eventos |
+| Framework | Vite |
+| Diretório raiz | `./` |
+| Node.js | 22.x |
+| Instalação | `npm ci` |
+| Build | `npm run build:vercel` |
+| Diretório de saída | `dist` |
 
-Para timeout, configure antes de confirmar: o mock cria pedido e demora 11 s na primeira resposta (Axios limita 10 s). Use Recuperar pedido, inclusive após refresh. Para interrupção, configure pending, confirme, dispare disconnect e depois settle; deve recuperar o mesmo pedido. Sequências executáveis estão em tests/e2e/commerce.spec.ts e realtime.spec.ts.
+Use as variáveis de demonstração descritas acima. O comando `build:vercel` força `VITE_ENABLE_MOCKS=true` e gera `build-info.json` com a SHA e o checksum do worker. As dependências de desenvolvimento também são necessárias durante o build.
 
-Sem compra em andamento, reset conhecido: commerce reset → details/reset → auth reset → scenario default → refresh. Essa sequência apaga somente dados fictícios e restaura os recursos implementados; um contexto de navegador novo também é isolado. Cenário de rede volta ao valor configurado no bootstrap; para observá-lo, navegue por links sem recarregar. Storage é local ao navegador, sem transações entre abas.
+O fallback SPA preserva o acesso direto e o refresh das rotas TanStack Router. Caminhos de API, assets, imagens, worker e metadados ficam fora da reescrita. O arquivo `public/mockServiceWorker.js` é servido na raiz com headers de cache próprios. A aplicação aguarda a ativação do worker antes de iniciar o Socket.IO.
 
-## Vercel — executar somente após autorização
-
-Importar o repositório na Vercel pode iniciar publicação automaticamente. Esta preparação não cria projeto remoto nem dispara deploy. Após autorização, escolha o commit/branch aprovado, root ./, preset Vite, Node 22.x, instalação npm ci, build npm run build:vercel e saída dist. Cadastre as variáveis de demonstração acima em Preview/Production. O script força VITE_ENABLE_MOCKS=true, mesmo se o ambiente tiver outro valor, e gera build-info.json com SHA, estado Git e checksum do worker. build:api continua separado.
-
-vercel.json fornece fallback SPA para rotas da aplicação; exclui /api e assets/imagens/worker/metadados. Rotas reais futuras de API não são reescritas para HTML. Arquivos existentes têm precedência no filesystem. Worker recebe Cache-Control no-cache/no-store e Service-Worker-Allowed /. Sem API real neste repositório, requisição /api não interceptada deve falhar, não retornar index.html.
-
-Ensaio local, sem publicação:
+Para conferir as regras de roteamento localmente:
 
 ```sh
 npm run build:vercel
 npm run preview:deployment
 ```
 
-Em outro PowerShell:
+Em outro terminal PowerShell:
 
 ```powershell
 $env:DEPLOYMENT_URL = 'http://127.0.0.1:4177'
@@ -102,16 +253,17 @@ $env:DEPLOYMENT_EXPECTED_SHA = git rev-parse HEAD
 npm run test:deployment
 ```
 
-O servidor local aplica o subconjunto de rewrites/headers usado aqui; não é Vercel CLI nem infraestrutura Vercel. O teste cobre worker/checksum/headers, deep links/refresh, perfil/carteiras/sessão/carrinho e compra com preço alterado, interrupção Socket.IO e recuperação, além de cenários determinísticos. Relatórios HTML/JSON em reports/deployment/; evidências versionadas em docs/reports/vercel/.
+Para testar uma publicação, troque `DEPLOYMENT_URL` pela URL HTTPS e `DEPLOYMENT_EXPECTED_SHA` pela SHA implantada. O comando testa a aplicação e grava HTML/JSON em `reports/deployment/`; ele não faz deploy. Repita essa verificação após atualizar a versão publicada. Mais detalhes em [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
-**Após cada deploy autorizado**, substitua DEPLOYMENT_URL pela URL HTTPS pública e DEPLOYMENT_EXPECTED_SHA pela SHA completa implantada, e execute o mesmo comando. Ele não faz deploy. Registre URL/SHA/data, resultados e traces; verifique acesso público sem proteção de preview. A versão publicada precisa corresponder ao código entregue. A execução pública de 18/10/2026 passou 12/12 com a URL acima e SHA 58188fc7078755f9a627c8c69bb9fa1f6d0d1954; HTML/JSON em docs/reports/delivery/deployment-public. Esse resultado vale para os cenários e versão testados, sem substituir a suíte completa local nem certificar outros navegadores.
+## Limitações conhecidas
 
-## Design e materiais
+- A composição de algumas telas, a navegação mobile e o footer diferem dos SVGs. A fonte usada é IBM Plex Mono, como substituta da família não identificada nos arquivos. O [mapa de frames](design/FRAME_MAP.md) e a [comparação visual](docs/reports/delivery/visual/README.md) registram essas diferenças.
+- A performance mobile está abaixo da meta. O bootstrap e a execução de JavaScript, incluindo os mocks, ainda precisam de otimização; o build também aponta um chunk acima de 500 kB.
+- A persistência é local ao navegador, sem garantia de sincronização ou transações entre abas. A simulação não substitui autenticação, pagamentos ou armazenamento de produção.
+- Não foram feitas avaliações manuais com leitor de tela, zoom real do navegador ou uma instalação em clone limpo independente. O build público informou `gitDirty=true`; essa condição está registrada na auditoria.
 
-[Mapa de frames](design/FRAME_MAP.md) e [especificação](design/DESIGN_SPEC.md) documentam os SVGs preservados. Assets são quatro imagens originais WebP e fonte local IBM Plex Mono substituta. Não há SVG de tela inteira no lugar de interface funcional. Fonte, composição mobile, navegação/footer e confirmações têm desvios documentados; baselines não certificam fidelidade integral. `npm run assets:extract` reproduz os assets individuais. Estrutura por funcionalidades em src/features/, componentes em src/components/, contratos/transporte separados de src/mocks/.
+## Documentação
 
-## Auditoria final de entrega
-
-[Nota de passagem do projeto](PROJECT_NOTE.md): estado verificado, fluxo de dados, reprodução e prioridades para a defesa.
-
-[DELIVERY_REPORT.md](DELIVERY_REPORT.md) compara cada requisito/critério eliminatório com código e execução reais, separa PASS/FAIL/NOT TESTED e identifica a SHA auditada. Relatórios finais ficam em docs/reports/delivery/. O PR de entrega #13 foi publicado como rascunho e mesclado externamente durante a auditoria; o agente não fez merge/deploy/release. A validação pública posterior passou, mas a conclusão geral continua FAIL por fidelidade visual e performance mobile. Lighthouse: performance início 77/100 e detalhe 84/98 (mobile/desktop); A/BP=100, SEO=92.
+- [CHALLENGE.md](CHALLENGE.md): escopo e critérios do desafio.
+- [ARCHITECTURE.md](ARCHITECTURE.md): contratos, organização, cache, sessão e reconciliação.
+- [DELIVERY_REPORT.md](DELIVERY_REPORT.md): requisitos verificados, resultados e pendências.

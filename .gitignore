@@ -12,3 +12,7 @@ coverage/
 .tmp/
 .tmp-*.json
 *.tsbuildinfo
+
+# Material local de estudo e preparação
+/LEARNING.md
+/PROJECT_NOTE.md
