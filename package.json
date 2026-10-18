@@ -22,7 +22,10 @@
     "audit:lighthouse": "node scripts/lighthouse.mjs",
     "audit:check": "node scripts/check-lighthouse.mjs",
     "verify": "npm run lint && npm run test && npm run build && npm run test:e2e",
-    "assets:extract": "node scripts/extract-assets.mjs"
+    "assets:extract": "node scripts/extract-assets.mjs",
+    "build:vercel": "node scripts/build-vercel.mjs",
+    "preview:deployment": "node scripts/preview-deployment.mjs",
+    "test:deployment": "playwright test --config playwright.deployment.config.ts"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.2.0",

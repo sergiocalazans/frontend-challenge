@@ -158,3 +158,13 @@ Revise o código e execute os exemplos antes de defender a solução. O candidat
 5. **Decisões:** uma fonte de conta, apelido coerente com carteira principal, limites de arquivo e MIME/assinatura, ENS opcional, token e versão de credencial revalidados depois de operações assíncronas; só outras sessões são revogadas.
 6. **Como testar:** build, npm test e Playwright profile.spec.ts/design-system.spec.ts; cobre erro, retry, refresh, outro usuário, conflito, avatar inválido/removido e nova senha. Resultados e falhas em docs/PROFILE.md.
 7. **Defesa:** por que comparar o hash anterior após await? Por que o mock não aceita userId do corpo como proprietário? Por que selecionar arquivo não significa upload concluído? Como nome/e-mail e apelido permanecem consistentes? Por que reset também precisa restaurar perfil/senha?
+
+## Feature: preparação Vercel
+
+1. **Implementação:** fallback de rotas, worker em raiz, build demo explícito e metadados, ensaio local e smoke tests reutilizáveis na URL pública autorizada.
+2. **Arquivos:** vercel.json, scripts/build-vercel.mjs, scripts/preview-deployment.mjs, main.tsx, playwright.deployment.config.ts, tests/deployment e docs/DEPLOYMENT.md.
+3. **Fluxo:** npm build:vercel força mocks → Vite/typecheck → dist/worker/metadados → host estático → worker intercepta REST/WebSocket → Router/Query. Teste externo verifica HTTP, UI, refresh e protocolo real.
+4. **Tecnologias:** Vite, configuração Vercel, Node subprocess/HTTP/crypto, MSW e Socket.IO reais, Playwright em três larguras.
+5. **Decisões:** /api e assets não recebem fallback HTML; build:api preservado; registro absoluto e sem cache de atualização; teste local não comprova infraestrutura publicada. Metadados registram SHA/dirty/checksum para evidência verificável.
+6. **Como testar:** build:vercel, preview:deployment e test:deployment com URL local; após autorização, repetir com HTTPS público e SHA esperada. 12/12 cenários locais aprovados; execução pública ainda NOT TESTED.
+7. **Defesa:** por que o fallback não deve engolir /api? Por que não remover MSW do build demo? Por que o worker precisa ser JavaScript e não HTML? Como Socket.IO funciona sem servidor remoto nesta simulação? Por que localhost aprovado não significa deploy aprovado? Por que URL nova não compartilha o storage anterior?

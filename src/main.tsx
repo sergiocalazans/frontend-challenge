@@ -8,6 +8,7 @@ async function bootstrap() {
   if (env.mocks) {
     const { worker } = await import('./mocks/browser')
     await worker.start({
+      serviceWorker: { url: '/mockServiceWorker.js', options: { scope: '/', updateViaCache: 'none' } },
       quiet: true,
       onUnhandledRequest(request, print) {
         if (new URL(request.url).pathname.startsWith('/api/')) print.error()
