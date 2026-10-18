@@ -137,6 +137,6 @@ Evidências públicas: [HTML](docs/reports/delivery/deployment-public/index.html
 4. Manter a URL pública acessível, repetir o smoke após cada novo deploy/SHA e investigar o gitDirty informado no ambiente remoto antes de alegar build de checkout limpo.
 5. Revisar as pendências antes de considerar a entrega aprovada, mesmo com o PR #13 já mesclado externamente. Nenhum merge de PR, deploy ou release foi realizado pelo agente; integrações foram executadas externamente pelo candidato.
 
-## Fluxo de dados para defesa
+## Fluxo de dados
 
 URL/ação → validação tipada → TanStack Query → Axios → handlers MSW → estado persistido da simulação → resposta → cache por parâmetros/usuário → React. Favoritos aplicam otimismo e rollback. ETH é string no transporte e bigint nos cálculos. Checkout recebe cotação, revisa, envia a chave idempotente e recupera o mesmo pedido; recibo usa snapshot REST confirmado. Socket.IO transporta identidade/versão, descarta duplicatas/antigos e invalida consultas; reconexão consulta REST. Logout/expiração limpam cache privado e encerram subscriptions antigas.

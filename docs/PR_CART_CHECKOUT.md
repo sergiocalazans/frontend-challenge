@@ -48,7 +48,7 @@ A primeira suíte completa teve 134/135 por deslocamento do botão Comprar no mo
 
 ## Decisões técnicas
 
-Strings decimais no transporte e bigint nos cálculos. Fingerprint da cotação inclui versões, estoque, cupom, carteira e conexão. Idempotência consulta a tentativa existente antes de rejeitar uma cotação já expirada. Recibo usa snapshot; confirmações removem somente quantidades das linhas compradas. Polling recupera o pedido; canais privados de realtime serão a próxima feature. [Contratos e fluxo](https://github.com/sergiocalazans/frontend-challenge/blob/feature/cart-checkout/docs/CART_CHECKOUT.md), [LEARNING](https://github.com/sergiocalazans/frontend-challenge/blob/feature/cart-checkout/LEARNING.md).
+Strings decimais no transporte e bigint nos cálculos. Fingerprint da cotação inclui versões, estoque, cupom, carteira e conexão. Idempotência consulta a tentativa existente antes de rejeitar uma cotação já expirada. Recibo usa snapshot; confirmações removem somente quantidades das linhas compradas. Polling recupera o pedido; canais privados de realtime serão a próxima feature. [Contratos e fluxo](https://github.com/sergiocalazans/frontend-challenge/blob/feature/cart-checkout/docs/CART_CHECKOUT.md).
 
 ## Limitações conhecidas
 

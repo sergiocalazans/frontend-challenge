@@ -42,7 +42,7 @@ Rodadas anteriores tiveram 53/54 (falha de transporte no setup), 54/54 e 52/54 (
 
 URL → normalização tipada → chave TanStack Query → Axios com AbortSignal → handler MSW → filtros/ordenação/paginação → resposta tipada → componentes. Preços são strings decimais convertidas em BigInt para comparação; o parser de URL evita perda de precisão. Eventos Socket.IO invalidam consultas para que a API recalcule filtros e totais.
 
-Campos de preço substituem o slider visual com validação acessível. Não são exibidas contagens de categoria sem contrato. A documentação detalha essas adaptações e o fluxo em `docs/CATALOG.md` e `LEARNING.md`.
+Campos de preço substituem o slider visual com validação acessível. Não são exibidas contagens de categoria sem contrato. A documentação detalha essas adaptações e o fluxo em `docs/CATALOG.md`.
 
 ## Limitações conhecidas
 

@@ -12,7 +12,7 @@ Branch criada de `develop` atualizado em `d5cfb0d`, com working tree inicialment
 - Adiciona skeletons de detalhe/resumo com shimmer e movimento reduzido.
 - Reutiliza Query, Axios, contratos, mocks MSW e Socket.IO existentes; mantém feedback de estados e considera a lista filtrada no estado vazio.
 - Adiciona 15 execuções E2E aos 21 casos existentes, três baselines de conta e atualiza três do laboratório.
-- Atualiza LEARNING.md, ARCHITECTURE.md, README e guias técnicos; preserva relatórios e trace da falha observada.
+- Atualiza ARCHITECTURE.md, README e guias técnicos; preserva relatórios e trace da falha observada.
 
 ## Requisitos atendidos
 
