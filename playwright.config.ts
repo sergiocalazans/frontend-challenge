@@ -8,7 +8,7 @@ export default defineConfig({
   // Keep browser processes within the local machine's budget; race tests still
   // exercise overlapping requests inside their own isolated browser context.
   workers: 1,
-  reporter: [['list'], ['html', { open: 'never' }]],
+  reporter: [['list'], ['html', { open: 'never' }], ['json', { outputFile:'reports/playwright/results.json' }]],
   use: { baseURL: 'http://127.0.0.1:4173', trace: 'retain-on-failure', screenshot: 'only-on-failure', locale: 'pt-BR', reducedMotion: 'reduce' },
   projects: [
     { name: 'chromium-desktop', use: { browserName: 'chromium', viewport: { width: 1440, height: 1000 } } },

@@ -1,4 +1,6 @@
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { createHash } from 'node:crypto'
+import { execFileSync } from 'node:child_process'
 import lighthouse from 'lighthouse'
 import desktop from 'lighthouse/core/config/desktop-config.js'
 import { chromium } from '@playwright/test'
@@ -30,6 +32,9 @@ try {
     const runs = results.filter(result => result.page === page && result.profile === profile)
     return { page, profile, scores: Object.fromEntries(Object.keys(runs[0].scores).map(key => [key, median(runs.map(run => run.scores[key]))])), metrics: Object.fromEntries(Object.keys(runs[0].metrics).map(key => [key, median(runs.map(run => run.metrics[key]))])) }
   }))
-  await writeFile(`${directory}/summary.json`, JSON.stringify({ date: new Date().toISOString(), node: process.version, platform: process.platform, scope: 'Catalog and NFT detail; default mocks, images and fonts enabled', results, medians }, null, 2))
+  let code = {commit:null,dirty:null}
+  try { code = {commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),dirty:Boolean(execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim())} } catch { /* An exported source archive may not contain Git metadata. */ }
+  const indexSha256 = createHash('sha256').update(await readFile('dist/index.html')).digest('hex')
+  await writeFile(`${directory}/summary.json`, JSON.stringify({ date: new Date().toISOString(), node: process.version, platform: process.platform, code,build:{indexSha256},scope: 'Catalog and NFT detail; default mocks, images and fonts enabled', results, medians }, null, 2))
   console.log(JSON.stringify(medians, null, 2))
 } finally { await new Promise((resolve, reject) => server.httpServer.close(error => error ? reject(error) : resolve())) }
