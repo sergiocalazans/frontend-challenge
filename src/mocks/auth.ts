@@ -3,6 +3,7 @@ import { readCommerce, writeCommerce } from './commerce-store'
 import { delay, http, HttpResponse } from 'msw'
 import type { Credentials, Registration, SessionUser } from '@/features/auth/contracts'
 import { validateCredentials } from '@/features/auth/contracts'
+import { hashPassword } from './password'
 
 import { readSessionStore, writeSessionStore, seedDetailSessions, type SessionStore } from './session-store'
 type MockUser = SessionStore['users'][number]
@@ -20,11 +21,6 @@ export function sessionUser(request: Request): SessionUser | null {
   const session = database.sessions[token]
   const user = session && session.expiresAt > Date.now() ? database.users.find(user => user.id === session.userId) : undefined
   return user ? { id: user.id, name: user.name, email: user.email } : null
-}
-async function hash(password: string, salt: string) {
-  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits'])
-  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: new TextEncoder().encode(salt), iterations: 100_000, hash: 'SHA-256' }, key, 256)
-  return Array.from(new Uint8Array(bits), byte => byte.toString(16).padStart(2, '0')).join('')
 }
 function authenticate(user: MockUser) {
   database = readSessionStore()
@@ -57,7 +53,7 @@ export const authHandlers = [
     if (Object.keys(errors).length) return problem('VALIDATION', 'Revise os campos.', 422, errors)
     database = readSessionStore()
     const user = database.users.find(user => user.email === input.email)
-    if (!user || await hash(input.password, user.salt) !== user.passwordHash) return problem('INVALID_CREDENTIALS', 'E-mail ou senha incorretos.', 401)
+    if (!user || await hashPassword(input.password, user.salt) !== user.passwordHash) return problem('INVALID_CREDENTIALS', 'E-mail ou senha incorretos.', 401)
     return authenticate(user)
   }),
   http.post('*/api/users', async ({ request }) => {
@@ -69,7 +65,7 @@ export const authHandlers = [
     database = readSessionStore()
     if (database.users.some(user => user.email === input.email)) return problem('EMAIL_CONFLICT', 'Este e-mail já está cadastrado.', 409, { email: 'Este e-mail já está cadastrado.' })
     const salt = crypto.randomUUID()
-    const user = { id: crypto.randomUUID(), name: input.name, email: input.email, salt, passwordHash: await hash(input.password, salt) }
+    const user = { id: crypto.randomUUID(), name: input.name, email: input.email, salt, passwordHash: await hashPassword(input.password, salt) }
     // Recheck after async hashing to reject concurrent registrations with the same email.
     database = readSessionStore()
     if (database.users.some(user => user.email === input.email)) return problem('EMAIL_CONFLICT', 'Este e-mail já está cadastrado.', 409)

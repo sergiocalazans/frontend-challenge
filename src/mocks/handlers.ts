@@ -1,4 +1,5 @@
 import { cartHandlers } from './cart'
+import { profileHandlers } from './profile'
 import { walletHandlers } from './wallets'
 import { orderHandlers } from './orders'
 import { realtimeHandlers } from './socket'
@@ -10,6 +11,7 @@ import { delay, http, HttpResponse } from 'msw'
 import { listeners, mockState, resetMocks, scenarios, type Scenario } from './state'
 
 export const handlers = [
+  ...profileHandlers,
   ...realtimeHandlers,
   ...cartHandlers, ...walletHandlers, ...orderHandlers,
   ...detailHandlers,
