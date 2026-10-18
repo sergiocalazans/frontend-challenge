@@ -1,0 +1,649 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\calaz\\Desktop\\Projetos\\frontend-challenge\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.deployment.config.ts"
+    ],
+    "configFile": "C:\\Users\\calaz\\Desktop\\Projetos\\frontend-challenge\\playwright.deployment.config.ts",
+    "rootDir": "C:/Users/calaz/Desktop/Projetos/frontend-challenge/tests/deployment",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/calaz/Desktop/Projetos/frontend-challenge/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "deployment-desktop",
+        "name": "deployment-desktop",
+        "testDir": "C:/Users/calaz/Desktop/Projetos/frontend-challenge/tests/deployment",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/calaz/Desktop/Projetos/frontend-challenge/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "deployment-tablet",
+        "name": "deployment-tablet",
+        "testDir": "C:/Users/calaz/Desktop/Projetos/frontend-challenge/tests/deployment",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/calaz/Desktop/Projetos/frontend-challenge/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "deployment-mobile",
+        "name": "deployment-mobile",
+        "testDir": "C:/Users/calaz/Desktop/Projetos/frontend-challenge/tests/deployment",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "C:\\Users\\calaz\\Desktop\\Projetos\\frontend-challenge\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "deployment-desktop",
+        "testDir": "C:\\Users\\calaz\\Desktop\\Projetos\\frontend-challenge\\tests\\deployment",
+        "snapshotDir": "C:\\Users\\calaz\\Desktop\\Projetos\\frontend-challenge\\tests\\deployment",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 30000,
+        "use": {
+          "baseURL": "https://frontend-challenge-pi-six.vercel.app",
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "locale": "pt-BR",
+          "reducedMotion": "reduce",
+          "browserName": "chromium",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          }
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "deployment-desktop"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "C:\\Users\\calaz\\Desktop\\Projetos\\frontend-challenge\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "deployment-tablet",
+        "testDir": "C:\\Users\\calaz\\Desktop\\Projetos\\frontend-challenge\\tests\\deployment",
+        "snapshotDir": "C:\\Users\\calaz\\Desktop\\Projetos\\frontend-challenge\\tests\\deployment",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 30000,
+        "use": {
+          "baseURL": "https://frontend-challenge-pi-six.vercel.app",
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "locale": "pt-BR",
+          "reducedMotion": "reduce",
+          "browserName": "chromium",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          }
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "deployment-tablet"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "C:\\Users\\calaz\\Desktop\\Projetos\\frontend-challenge\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "deployment-mobile",
+        "testDir": "C:\\Users\\calaz\\Desktop\\Projetos\\frontend-challenge\\tests\\deployment",
+        "snapshotDir": "C:\\Users\\calaz\\Desktop\\Projetos\\frontend-challenge\\tests\\deployment",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 30000,
+        "use": {
+          "baseURL": "https://frontend-challenge-pi-six.vercel.app",
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "locale": "pt-BR",
+          "reducedMotion": "reduce",
+          "browserName": "chromium",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "isMobile": true,
+          "hasTouch": true
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "deployment-mobile"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "reports/deployment",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "reports/deployment/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "deployment.spec.ts",
+      "file": "deployment.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "deployment serves the actual worker and build metadata without rewriting reserved paths",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "deployment-desktop",
+              "projectName": "deployment-desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1006,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T14:23:13.081Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "build-publico",
+                      "contentType": "application/json",
+                      "body": "ewogICJjb21taXQiOiAiNTgxODhmYzcwNzg3NTVmOWE2MjdjOGM2OWJiOWZhMWY2ZDBkMTk1NCIsCiAgImdpdERpcnR5IjogdHJ1ZSwKICAibW9ja3NFbmFibGVkIjogdHJ1ZSwKICAid29ya2VyU2hhMjU2IjogIjI2MTcxNTk5ZDk0ZDU0NDUyOTczMDNmM2ExZjFjZWRlYzI2ODM1ZWEzZDAwNTdkY2ZhOTJlYzUyMGNiMzVjY2EiCn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f3e554c6199c48d65fc5-1021a539f327edb3ee32",
+          "file": "deployment.spec.ts",
+          "line": 6,
+          "column": 1
+        },
+        {
+          "title": "deep links, profile, wallets, authenticated session and cart survive refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "deployment-desktop",
+              "projectName": "deployment-desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 17203,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T14:23:14.154Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f3e554c6199c48d65fc5-d399d1a790840c15a6fc",
+          "file": "deployment.spec.ts",
+          "line": 20,
+          "column": 1
+        },
+        {
+          "title": "real Socket.IO revalidates price and recovers an interrupted pending order without another purchase",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "deployment-desktop",
+              "projectName": "deployment-desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8177,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T14:23:31.607Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f3e554c6199c48d65fc5-9cfa87b65beed6ec35ab",
+          "file": "deployment.spec.ts",
+          "line": 35,
+          "column": 1
+        },
+        {
+          "title": "deterministic MSW scenarios expose loading, empty, error and reset recovery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "deployment-desktop",
+              "projectName": "deployment-desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5804,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T14:23:39.803Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f3e554c6199c48d65fc5-46c2303c85159a6ee4fb",
+          "file": "deployment.spec.ts",
+          "line": 50,
+          "column": 1
+        },
+        {
+          "title": "deployment serves the actual worker and build metadata without rewriting reserved paths",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "deployment-tablet",
+              "projectName": "deployment-tablet",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 312,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T14:23:46.827Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "build-publico",
+                      "contentType": "application/json",
+                      "body": "ewogICJjb21taXQiOiAiNTgxODhmYzcwNzg3NTVmOWE2MjdjOGM2OWJiOWZhMWY2ZDBkMTk1NCIsCiAgImdpdERpcnR5IjogdHJ1ZSwKICAibW9ja3NFbmFibGVkIjogdHJ1ZSwKICAid29ya2VyU2hhMjU2IjogIjI2MTcxNTk5ZDk0ZDU0NDUyOTczMDNmM2ExZjFjZWRlYzI2ODM1ZWEzZDAwNTdkY2ZhOTJlYzUyMGNiMzVjY2EiCn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f3e554c6199c48d65fc5-f5c4248dbe9d33ef957c",
+          "file": "deployment.spec.ts",
+          "line": 6,
+          "column": 1
+        },
+        {
+          "title": "deep links, profile, wallets, authenticated session and cart survive refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "deployment-tablet",
+              "projectName": "deployment-tablet",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8457,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T14:23:47.184Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f3e554c6199c48d65fc5-f15626fb8b97f2150dab",
+          "file": "deployment.spec.ts",
+          "line": 20,
+          "column": 1
+        },
+        {
+          "title": "real Socket.IO revalidates price and recovers an interrupted pending order without another purchase",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "deployment-tablet",
+              "projectName": "deployment-tablet",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7257,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T14:23:55.813Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f3e554c6199c48d65fc5-6571de3243421b280611",
+          "file": "deployment.spec.ts",
+          "line": 35,
+          "column": 1
+        },
+        {
+          "title": "deterministic MSW scenarios expose loading, empty, error and reset recovery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "deployment-tablet",
+              "projectName": "deployment-tablet",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5932,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T14:24:03.089Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f3e554c6199c48d65fc5-b0ffca455fde2257e1e8",
+          "file": "deployment.spec.ts",
+          "line": 50,
+          "column": 1
+        },
+        {
+          "title": "deployment serves the actual worker and build metadata without rewriting reserved paths",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "deployment-mobile",
+              "projectName": "deployment-mobile",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 374,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T14:24:11.199Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "build-publico",
+                      "contentType": "application/json",
+                      "body": "ewogICJjb21taXQiOiAiNTgxODhmYzcwNzg3NTVmOWE2MjdjOGM2OWJiOWZhMWY2ZDBkMTk1NCIsCiAgImdpdERpcnR5IjogdHJ1ZSwKICAibW9ja3NFbmFibGVkIjogdHJ1ZSwKICAid29ya2VyU2hhMjU2IjogIjI2MTcxNTk5ZDk0ZDU0NDUyOTczMDNmM2ExZjFjZWRlYzI2ODM1ZWEzZDAwNTdkY2ZhOTJlYzUyMGNiMzVjY2EiCn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f3e554c6199c48d65fc5-60c4fd10f70c6143b8a7",
+          "file": "deployment.spec.ts",
+          "line": 6,
+          "column": 1
+        },
+        {
+          "title": "deep links, profile, wallets, authenticated session and cart survive refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "deployment-mobile",
+              "projectName": "deployment-mobile",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8690,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T14:24:11.633Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f3e554c6199c48d65fc5-d2194f20afa423bcb82c",
+          "file": "deployment.spec.ts",
+          "line": 20,
+          "column": 1
+        },
+        {
+          "title": "real Socket.IO revalidates price and recovers an interrupted pending order without another purchase",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "deployment-mobile",
+              "projectName": "deployment-mobile",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7420,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T14:24:20.731Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f3e554c6199c48d65fc5-cadc30328eab8cc0ac91",
+          "file": "deployment.spec.ts",
+          "line": 35,
+          "column": 1
+        },
+        {
+          "title": "deterministic MSW scenarios expose loading, empty, error and reset recovery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "deployment-mobile",
+              "projectName": "deployment-mobile",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5959,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T14:24:28.173Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f3e554c6199c48d65fc5-89920ccfb46798563751",
+          "file": "deployment.spec.ts",
+          "line": 50,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-18T14:23:11.853Z",
+    "duration": 82519.378,
+    "expected": 12,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

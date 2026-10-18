@@ -1,98 +1,96 @@
-# Arquitetura da configuração inicial
+# Arquitetura do NFT Marketplace
 
-## Escopo e fluxo
+Estado auditado em 18/10/2026: develop 18addfc, com catálogo, detalhes, autenticação/favoritos, comércio e realtime integrados. Perfil/avatar/senha foram concluídos no PR #11 e a preparação Vercel integrada no #12. O merge externo #13 levou a mesma árvore a main 58188fc; essa SHA está publicada na [Vercel](https://frontend-challenge-pi-six.vercel.app/), com 12/12 testes de deploy aprovados. Resultados atuais e pendências: [DELIVERY_REPORT.md](DELIVERY_REPORT.md). Documentos de features registram evolução histórica; o estado atual descrito aqui prevalece sobre afirmações antigas de placeholders, polling de 1 s ou ausência de autenticação.
 
-`main.tsx` carrega estilos/fontes locais → inicia MSW se configurado → importa `app/mount.tsx` → cria QueryClient e Router → renderiza o layout e a rota. A importação tardia é intencional: Socket.IO deve capturar o WebSocket já interceptado. Falha no bootstrap mostra mensagem acessível, sem iniciar uma demonstração parcialmente conectada.
+## Inicialização e responsabilidades
 
-Os componentes recebem dados e callbacks. `features/catalog/api.ts` concentra consultas via Axios e transmite AbortSignal do TanStack Query. As fixtures vivem exclusivamente em `mocks/`. O código funcional não busca respostas falsas dentro de componentes.
+main.tsx carrega estilos/fontes locais, aguarda MSW por configuração e só então importa app/mount.tsx. Essa ordem permite que socket.io-client capture WebSocket interceptado. mount cria QueryClient, sessão e Router; falha de bootstrap apresenta erro acessível. A aplicação não usa respostas fictícias em componentes, hooks ou Axios.
 
-O roteamento é declarado em código, sem geração de arquivos, para manter a base pequena e compreensível. A tabela em `app/router.tsx` fornece links tipados, valida busca `q`, restauração de scroll, estado de erro e 404. Os fluxos privados ainda são placeholders sem dados privados; não existe proteção de sessão implementada nem sucesso de autenticação simulado.
+- src/app: providers, políticas globais e rotas TanStack Router.
+- src/features/catalog, nft-details, auth, profile e commerce: contratos, APIs Axios, queries/mutations e apresentação.
+- src/components/ui: primitivas shadcn/ui adaptadas, base Radix; shared/layout: composições acessíveis.
+- src/lib: instância HTTP, ambiente, precisão ETH e lifecycle Socket.IO.
+- src/mocks: handlers REST/Socket.IO e regras da simulação, persistência e cenários.
+- tests: integração MSW/cliente real e E2E; scripts: assets e Lighthouse.
 
-## Contratos implementados
+As rotas privadas /checkout, /account/profile, /account/wallets e /orders/$orderId usam RequireSession. Enquanto verifica identidade, a guarda mantém skeleton; 401 retorna ao login com returnTo local seguro; 503 apresenta retry. /account/profile usa formulário funcional com persistência pela mesma fonte de contas da sessão. Rotas desconhecidas e NFTs/pedidos inexistentes apresentam estados próprios.
 
-| Recurso | Contrato | Resposta |
-| --- | --- | --- |
-| Catálogo inicial | `GET /api/nfts?q=texto` | `{ items: Nft[] }`; busca por nome; 503 no cenário error |
-| Controle de demonstração | `POST /api/demo/scenario` com `{ scenario }` | cenário aplicado; 400 para valor inválido; restaura fixtures |
-| Evento de demonstração | `POST /api/demo/nfts/:id/update` | alterna preço de exemplo, incrementa versão, emite evento; 404 se inexistente |
+## Contratos REST
 
-Endpoints `/demo` existem apenas no MSW, carregado por configuração. Não são uma API de negócio nem devem ser enviados a um backend real. O catálogo inicial não implementa paginação/ordenação/filtros combinados da entrega final. Filtro de rede no laboratório é uma demonstração local do componente, não esse contrato futuro.
+Prefixo /api por padrão. Todos os recursos são Axios → handlers MSW no modo demo. Contratos detalhados: [catálogo](docs/CATALOG.md), [detalhes](docs/NFT_DETAILS.md), [auth integrada](docs/AUTHENTICATION_INTEGRATION.md), [comércio](docs/CART_CHECKOUT.md).
 
-`Nft` contém `id`, `name`, `image`, `imageAlt`, `priceEth` como string decimal, `network`, `available` inteiro e `version`. ETH é exibido diretamente; nenhum total monetário usa `number`. Na feature de cotação será necessário um contrato de precisão adequado, por exemplo wei/BigInt ou biblioteca decimal. Typescript tipa o contrato, mas não valida um backend desconhecido em runtime; um schema de validação deve acompanhar a futura integração real.
+| Recursos | Operações |
+| --- | --- |
+| Sessão | POST /users, POST/GET/DELETE /session; consulta e invalidação por token |
+| NFTs | GET /nfts com busca/filtros/ordenação/paginação; GET /nfts/:id |
+| Favoritos | GET /favorites, PUT/DELETE /favorites/:id |
+| Carrinho | GET /cart, POST /cart/merge, POST/PATCH/DELETE /cart/items[/:id], PUT/DELETE /cart/coupon |
+| Carteiras | GET /wallets, PUT /wallets/:slot, POST /wallets/:id/connection |
+| Cotação | POST /quotes com walletId/network; snapshot com validade de 120 s |
+| Pedido | POST /orders com quoteId/collector e Idempotency-Key; GET /orders/:id |
+| Perfil/avatar/senha | GET/PATCH /profile, POST /profile/password; dados/avatar persistidos e senha com hash/salt novo |
 
-## Cache e HTTP
+Erros usam code/message e fields quando aplicável: formato 400, sessão 401, inexistente/alheio 404, conflito 409, cupom expirado 410, validação 422 e indisponibilidade 503. Tipos TypeScript não validam automaticamente respostas de um backend desconhecido; eventual integração externa exige validação de runtime e autenticação de servidor.
 
-- Uma instância Axios, base URL configurável, timeout de 10 segundos; cancelamento via signal.
-- Chave `['catalog', 'list', q]`, separando termos de busca e evitando que respostas atrasadas sobrescrevam outro termo.
-- Dados frescos por 30 segundos; descarte após 5 minutos sem observadores; refetch ao focar janela.
-- No máximo um retry de consulta para erro de rede/5xx; 4xx não recebe retry; mutations não repetem automaticamente.
-- Loading inicial apresenta skeletons; atualização em segundo plano mantém cards e informa atualização; erro tem retry; vazio possui mensagem própria.
-- Ainda não há cache privado, autenticação ou atualização otimista de negócio. Na próxima etapa, chaves privadas deverão incluir usuário e ser removidas com subscriptions ao trocar/encerrar sessão. Rollback de interação otimista continua pendente do desafio.
+## Estado, sessão e cache
 
-## Realtime e mocks
+Catálogo guarda q/categoria/rede/faixa ETH/ordenação/página na URL. A normalização valida parâmetros, mudanças de filtro reiniciam página e a chave Query contém todos os parâmetros. Axios recebe AbortSignal; respostas antigas não sobrescrevem outra consulta. O detalhe preserva edição/quantidade na URL.
 
-`createMarketSocket` retorna instância sem conectar automaticamente, com transporte WebSocket, reconexão habilitada e cinco tentativas. `subscribeToCatalog` conecta e registra handlers; cada conexão/reconexão invalida o catálogo para reconciliar com REST. `nft.updated` carrega `eventId`, `nftId` e `version`; versões repetidas/antigas por NFT são ignoradas. Cleanup remove os handlers, desconecta e descarta versões. Isso permite o ciclo extra de effects do StrictMode sem listeners persistentes.
+Política global: staleTime 30 s, gcTime 5 min, refetch em foco; no máximo um retry para falha de rede/5xx, sem retry de 4xx. Mutations não repetem automaticamente. Recursos privados de comércio usam stale imediato e reconciliam ao montar/focar. Sessão revalida periodicamente e em foco/montagem.
 
-O binding `@mswjs/socket.io-binding` traduz mensagens no protocolo Socket.IO; os testes usam `socket.io-client`, não substitutos de callbacks da UI. A simulação atual opera somente com WebSocket, sem polling, rooms, namespaces ou backend externo. MSW normaliza o caminho de transporte `/socket.io/` para a origem no matching. O mock envia heartbeat Engine.IO a cada 20 segundos e libera o timer ao fechar a conexão. No reset do laboratório, os valores iniciais são restaurados, mas as versões permanecem crescentes enquanto há consumidores conectados; a consulta REST é refeita. Um novo bootstrap começa novamente na versão 1. O reset é uma ferramenta de cenário, não um evento de negócio.
+session-store.ts é a fonte única do mock para contas/sessões, com PBKDF2/salt e tokens opacos de 30 minutos. Ana e Bruno são fixtures fictícias. Persistência local não oferece proteção de servidor/HttpOnly e não deve conter dados reais.
 
-`order.updated` possui tipo preliminar com `userId` e status, mas **não há consumidor de pedidos**, autorização de assinatura ou máquina de estados implementada. Isolamento de sessão, terminais de pedido, recuperação idempotente e reconexão durante checkout permanecem trabalho futuro. Os testes de setup não certificam esses fluxos.
+Chaves incluem ['private',userId,...]; carrinho visitante usa ['guest',guestId,'cart']. Logout/expiração/troca cancelam/removem cache privado; mutations capturam token e descartam respostas de identidades anteriores. Logout atrasado não pode limpar sessão mais recente de outra aba. Storage event provoca nova verificação e mantém a guarda em loading. Favoritos usam atualização otimista, snapshot para rollback e invalidação; servidor revalida sessão após a latência simulada.
 
-## Design system e decisões visuais
+## Comércio e precisão
 
-Primitivas baseadas no shadcn/ui (estilo new-york, Radix): Button, Input, Label, Card, Badge, Skeleton, Separator, Dialog e Tabs. Os arquivos são código do projeto; não há dependência de um componente remoto em runtime. `cn` local combina `clsx` e `tailwind-merge`. Tailwind v4 usa `@tailwindcss/vite` e tokens CSS.
+X-Cart-Id identifica carrinho visitante. API escolhe proprietário pelo token válido ou UUID visitante; token inválido não cai silenciosamente para visitante. Merge autenticado esvazia origem e preserva quantidades, sem duplicar repetição nem truncar excessos silenciosamente.
 
-- Cores de fundo/superfícies/cobre/texto/bordas vêm de DESIGN_SPEC.md. Tokens semânticos são uma organização nossa, não variáveis recuperadas do Figma.
-- `#F0805F`, originalmente encontrado em obrigatório, é reaproveitado para feedback de erro como decisão de implementação; erro também tem texto/ícone. Texto secundário usa `#CFB28C`; `#B39463` fica registrado para referência.
-- Container máximo 1200 px e margem mobile 24 px vêm das medidas observadas. Botões comuns de 40 px, inputs desktop de 40 px, inputs mobile de 50 px, raio de imagem de 15 px e modal desktop de até 500 px seguem exemplos específicos dos frames.
-- Controles de toque usam pelo menos 44 px onde necessário; tamanhos mínimos e foco visível são adaptações de acessibilidade.
-- **IBM Plex Mono 400/500/600 local** é uma substituição provisória, não a fonte confirmada do Figma. Os arquivos vêm de `@fontsource/ibm-plex-mono`; sem dependência de Google Fonts em runtime. Comparação visual posterior e fonte original continuam pendentes.
-- Breakpoints Tailwind (640/768/1024) e navegação mobile fixa são decisões de implementação; não foram extraídos do SVG. Verificação ocorre nos viewports exigidos 390/768/1440.
-- Hero e catálogo desta etapa são uma composição inicial para validar a base; não reproduzem toda D01. A grade demonstrativa tem quatro cards; sidebar, filtros e conta são componentes avaliados em `/design-system`. Footer foi reduzido às rotas existentes, evitando ações que aparentem funcionar sem implementação.
-- A marca KURIO foi mantida conforme SVG; a diferença com Jungle Gaming está explícita. Fontes, espaçamentos tipográficos e layouts ausentes exigem decisões documentadas, não declaração de fidelidade completa.
-- As quatro imagens originais foram extraídas, reduzidas para 640 px e convertidas para WebP quality 85. Os SVGs originais são preservados. Lucide complementa a iconografia como substituição documentada; os seis SVGs de ícones originais continuam disponíveis para comparação posterior.
+ETH trafega como strings decimais; ethToWei/weiToEth usam bigint. Totais são calculados no mock, incluindo desconto em wei e taxa da rede. A UI apresenta a cotação REST, sem recalcular preço usando ponto flutuante. Quantidades são inteiras e estoque é por edição.
 
-O Dialog fornece foco preso/restaurado, Escape, título e descrição, rolagem interna em telas baixas e botão de fechar com área de 44 px. A composição lateral reutiliza Dialog e o filtro controlado. Tabs são Radix e usam teclado. Skeleton shimmer respeita `prefers-reduced-motion` e acompanha as colunas da grade de destino. Campos têm label e associação de erro; busca e navegação possuem nomes acessíveis; há link de pular conteúdo e foco no main após mudar pathname.
+Carrinho/carteiras/cotações/pedidos e índice idempotente persistem em kurio.mock-commerce.v1; inventário em kurio.mock-inventory.v1. O carrinho aceita múltiplas redes, mas cada pedido exige uma rede compatível com todos os NFTs e a carteira conectada. Taxa do carrinho é estimativa; cotação final é a referência.
 
-## Qualidade e próximos passos
+Fingerprint da cotação inclui versões/estoque, revisão/cupom/expiração, carteira/conexão. Mudanças exigem nova revisão explícita e o servidor revalida antes de criar pedido. Rascunho e tentativa ficam em kurio.checkout-draft.<userId> e kurio.checkout-attempt.<userId>, isolados para retomada pela mesma identidade.
 
-Vitest integra REST/MSW e Socket.IO; Playwright usa o build de demonstração e observa UI/URL, foco, validação, estados e atualização realtime. As baselines são da implementação inicial, não do Figma. Lighthouse executa o mesmo build com imagens/fontes/mocks carregados, três vezes por perfil; falta adicionar detalhe real e auditar os fluxos completos.
+Antes do primeiro POST /orders, cliente persiste chave/payload. Mesma chave e conteúdo recuperam o mesmo pedido, mesmo com cotação vencida; conteúdo diferente gera 409. Timeout não gera automaticamente outra chave. Criação reserva estoque uma vez, estado pending evolui para confirmed/declined. Confirmação remove apenas quantidades compradas; recusa libera reserva e preserva itens/cupom. Recibo usa snapshot imutável, nunca preço atual do catálogo, e só abre após REST confirmed. Referências de transação são explicitamente simuladas.
 
-No Vitest, um alias carrega a distribuição de navegador real de `socket.io-client`. O transporte padrão do pacote em Node usa `ws`, que não passa pelo WebSocket global interceptado pelo MSW. Não se substituem eventos ou callbacks por mocks do cliente. Referência: [limitação do transporte Node no binding](https://github.com/mswjs/socket.io-binding/issues/15).
+## Socket.IO e reconciliação
 
-As próximas features devem implementar contratos de sessão, catálogo completo, favoritos, carrinho/cotação, checkout/pedidos, perfil e carteiras, com seus estados e documentação. Os 12 grupos E2E e os relatórios finais de performance ainda não estão completos. Evidências da etapa: [docs/VALIDATION.md](docs/VALIDATION.md).
+[Contrato e diagnóstico de transporte](docs/REALTIME.md). createMarketSocket cria conexão por consumidor, autoConnect false, transporte WebSocket, reconexão com 5 tentativas e espera de 500–2000 ms sem jitter para reprodução determinística. MSW/@mswjs/socket.io-binding intercepta protocolo real; não há setter de negócio acionado por cenário na UI.
 
-## Evolução: tokens, componentes e layouts
+| Evento | Dados e processamento |
+| --- | --- |
+| nft.updated | eventId/nftId/version; versão crescente; invalida catálogo/detalhe/carrinho para GET REST |
+| order.updated | eventId/orderId/userId/version/status; assinatura privada filtra identidade/recurso, duplicatas, versão antiga e regressão terminal |
+| session.expired | revoga assinatura; só invalida a sessão se token capturado ainda for atual |
+| orders.subscribe | cliente envia token após conectar; servidor resolve proprietário e revalida antes de cada envio |
 
-A base visual agora separa tokens de regras globais e oferece composições de conta/compra, FormField, drawer e skeletons específicos. Os contratos, fontes dos valores e limites estão em [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md). As rotas de perfil e carteiras compartilham a sidebar; seu conteúdo ainda é de preparação e não expõe dados privados. A composição de compra é demonstrada no laboratório, sem cotação ou pedido inventado. Resultados incrementais em [docs/DESIGN_SYSTEM_VALIDATION.md](docs/DESIGN_SYSTEM_VALIDATION.md).
+O binding não implementa autenticação de namespace; orders.subscribe é adaptação explícita. Token não vai na URL. Cada conexão/reconexão reconcilia REST. Eventos são sinais, sem impor dados de recibo: a leitura autenticada continua fonte de verdade. Polling de 15 s protege pedido pending contra evento perdido e para nos terminais. Mock persiste efeitos antes de publicar versão 2, com tick de 250 ms durante assinatura privada válida; GET também pode finalizar após refresh.
 
-A rota do laboratório é carregada sob demanda por `lazyRouteComponent`; a primeira visita baixa seu chunk separado. Isso retirou cerca de 70 kB do chunk principal nesta feature. A divisão não altera a ativação do MSW nem fornece um caminho especial de auditoria.
+Cleanup remove listeners/desconecta ao desmontar ou mudar token/usuário/pedido, e servidor remove timers. Cenário disconnect interrompe transporte real por 1500 ms; abertura Engine.IO controlada evita esperar o timeout de handshake durante as tentativas indisponíveis. Replay duplicate/stale atravessa binding Socket.IO. Sem rooms/namespaces autenticados de produção, long polling, backend remoto ou sincronização de transporte entre abas; persistência não é transacional entre abas.
 
-## Catálogo com URL e paginação
+## Mocks e cenários
 
-O contrato de listagem foi ampliado para `{ items, total, page, pageSize, totalPages }`, com busca, categoria, rede, faixa ETH e ordenação no servidor MSW. A chave Query contém todos os parâmetros; o parser de URL mantém texto decimal e o Axios consome AbortSignal. Eventos Socket.IO invalidam as listas, para reavaliar filtros e ordenação. O mock não emite mais um evento inicial por NFT, pois a conexão já reconcilia por REST.
+.env.demo ativa MSW no build de demonstração. REST e eventos reutilizam fixtures e estado para UI, testes e demonstração. Cenários default/empty/slow/error/race/offline/flaky são configuráveis; controles demo também cobrem sessão, favoritos, cupom, estoque, timeout, pagamento e reconexão. O reset dos recursos implementados e a ordem de uso estão no README. Auth reset restaura também dados de perfil/avatar e senha; nome/e-mail compartilham a conta e o apelido acompanha a carteira principal.
 
-Detalhes do contrato, decisões visuais, política de estado e cenários estão em [docs/CATALOG.md](docs/CATALOG.md); resultados reais em [docs/CATALOG_VALIDATION.md](docs/CATALOG_VALIDATION.md). A descrição antiga da chave apenas por `q` e do catálogo de quatro itens refere-se ao setup e foi substituída por esta evolução. O laboratório continua solicitando quatro itens para seus exemplos.
-## Histórico: detalhes e favoritos independentes
+No Vitest, alias carrega distribuição browser real de socket.io-client: transporte ws padrão do Node não passa pelo WebSocket global interceptado por MSW. Não se substituem callbacks do cliente. Dois usuários e tokens inválidos/expirados são exercitados. Persistência de banco no Node usa memória, browser usa localStorage.
 
-`docs/NFT_DETAILS.md` define REST, edições, seleção na URL, favoritos otimistas e reconciliação do detalhe por Socket.IO. Na entrega original do PR #5, sessão era consumida por contrato em branch independente de autenticação por escolha do usuário. O bridge MSW então resolvia o mesmo formato de token/banco persistido e fornece fixtures; na integração, authHandlers devem preceder o fallback GET de sessão. Chaves privadas incluem userId, mutations atrasadas verificam identidade e 401 limpa cache. A ação de compra apenas transmite seleção ao carrinho ainda pendente; não há confirmação de inclusão ou compra. Essa implementação provisória foi substituída pela integração descrita a seguir.
+## Design, acessibilidade e limitações
 
-## Autenticação e favoritos integrados
+Fontes, cores, proporções e componentes foram examinados nos SVGs originais, com mapa em design/FRAME_MAP.md. O SVG de prancha não é servido como tela. Quatro imagens originais viram assets WebP de 640 px; IBM Plex Mono local substitui família não identificada. Cobre/superfícies e margem desktop 120 px orientam tokens, mas não comprovam equivalência visual integral.
 
-`session-store.ts` é a única fonte dos mocks para contas e sessões, em memória no Node e localStorage no browser. Auth e favoritos revalidam o token nessa fonte; componentes não acessam o banco simulado. `useSession`/`SessionLifecycle` centralizam recuperação e invalidação, e Axios preserva Authorization explícito. `['private', userId, 'favorites']` isola o cache; logout/troca/401 cancelam e removem dados privados. Mutations capturam o token e descartam resultados de identidades anteriores. Logout compara token antes e depois do cancelamento. A troca entre abas reseta a consulta de sessão, mantendo a proteção em skeleton durante a verificação.
+Diferenças confirmadas: hero e navegação mobile reorganizados, grid sem desencontro original, footer simplificado, cabeçalho com laboratório, formulário de checkout/revisão e carteiras adaptados; ENS é opcional. D08 é implementado com confirmações independentes de perfil e senha. Filtros de preço usam campos validados em vez de slider. Referências usam totais inconsistentes em alguns frames; cotação funcional tem prioridade sobre esses valores de exemplo.
 
-## Validação e proveniência das auditorias
+Radix Dialog fornece foco preso/restaurado, Escape e semântica; campos associam labels/erros. Skeletons reservam dimensões e shimmer respeita reduced-motion. Alterações de rede/mutations têm feedback textual/roles. Layouts empilham em mobile e são testados em 390/768/1440. Reflow de 320 px não prova zoom real; não houve avaliação manual com leitor de tela.
 
-`docs/E2E_AUDIT.md` mapeia os 12 grupos com lacunas explícitas. Playwright exporta HTML/JSON; Lighthouse registra commit/dirty e hash do index construído. O verificador recalcula medianas e aplica as metas originais sem flexibilizá-las. `npm run verify` executa verificações funcionais em sequência; performance é medida e verificada em comandos próprios. Foco da revisão usa ref/effect após commit do React. O plugin Vite inclui modulepreload do mount construído: antecipa download/compilação, enquanto a execução continua após worker.start para preservar o interceptor Socket.IO. A auditoria é independente do PR de realtime; a combinação dos dois ainda precisa de validação após merge autorizado.
+Defeito de foco da revisão e rótulo mobile autenticado foram corrigidos no PR #10. Modulepreload inicia download/compilação sem executar o mount antes de worker.start. verify encadeia verificações funcionais; audit:check recalcula medianas e rejeita rodadas/métricas inválidas e metas não atingidas. Não se atribui melhora de performance ao preload: medições daquela branch não demonstraram melhora.
 
-## Comércio com cotação e pedidos
+## Validação e entrega
 
-Contratos e regras em [docs/CART_CHECKOUT.md](docs/CART_CHECKOUT.md). Carrinho/carteiras/cotação/pedido passam por Axios/MSW. O mock persiste inventário por edição e dados por proprietário; o cliente usa cache privado e rascunho por usuário. A cotação é a referência do fechamento; o backend compara fingerprint e reserva estoque antes de registrar pending. Idempotência precede revalidação de cotação ao recuperar uma tentativa existente. GET de pedido reconcilia o resultado e produz recibo imutável. Valores usam bigint no mock e strings no transporte.
+E2E observa UI/URL e resultados REST, com baselines versionadas de início/detalhe/carrinho/checkout e auth; cliente Socket.IO real em integração e browser. Um worker reduz competição local, sem alterar timeouts/asserções nem tolerâncias. Chromium Windows é o ambiente medido, não garantia para outros navegadores/sistemas. Lighthouse audita build demo com imagens/fontes/mocks, início/detalhe × mobile/desktop × três rodadas, reportando todas as execuções e medianas.
 
-O stream público existente invalida carrinho/catálogo e informa mudanças. Polling recupera pedido nesta etapa; canais privados, order.updated e reconexão são a próxima feature. As branches serão sequenciais, aguardando merge autorizado entre elas. Nenhum resultado parcial equivale à conclusão dos 12 grupos do desafio.
+DELIVERY_REPORT diferencia SHA de develop, evidências de PR independente e estados PASS/FAIL/NOT TESTED. A suíte completa local passou 162/162 e o smoke público 12/12, incluindo refresh e reconciliação. Lighthouse no build local encontrou performance mobile abaixo da meta; fidelidade integral continua FAIL. O relatório deve acompanhar a revisão antes de considerar entrega ou release aprovada.
 
-## Eventos privados e recuperação
-
-`docs/REALTIME.md` documenta autenticação de subscriptions e limitações do binding. O servidor simulado valida a sessão a cada envio e filtra o proprietário. O cliente filtra ID/versão/recurso/sessão e invalida REST em vez de aplicar status do evento ao recibo. Conexão e reconexão reconsultam o pedido ativo; polling de 15 s é fallback. Encerramento remove listeners, timers e conexão. O PR independente de auditorias não incorpora esta branch até integração autorizada.
 
 ## Perfil integrado à conta
 
@@ -100,4 +98,4 @@ A rota /account/profile agora usa ProfilePage lazy, GET/PATCH /profile e POST /p
 
 ## Preparação de deploy Vercel
 
-vercel.json aplica fallback SPA excluindo API/arquivos reservados, com headers para o worker. build:vercel chama o build demo com mocks forçados e gera metadados de commit/checksum, mantendo build:api separado. Registro do worker é absoluto na raiz; Socket.IO só é importado após sua ativação. preview:deployment é um ensaio estático local das regras, não emulador da plataforma. test:deployment testa URL fornecida e nunca publica. Contratos, execução e limites estão em docs/DEPLOYMENT.md. Sem URL pública, compatibilidade com Vercel/HTTPS permanece NOT TESTED.
+vercel.json aplica fallback SPA excluindo API/arquivos reservados, com headers para o worker. build:vercel chama o build demo com mocks forçados e gera metadados de commit/checksum, mantendo build:api separado. Registro do worker é absoluto na raiz; Socket.IO só é importado após sua ativação. preview:deployment é um ensaio estático local das regras, não emulador da plataforma. test:deployment testa URL fornecida e nunca publica. Contratos, execução e limites estão em docs/DEPLOYMENT.md. A validação pública exercitou MSW e o cliente Socket.IO real com transporte interceptado no browser; isso não representa um servidor Socket.IO remoto. build-info público informa a SHA esperada e gitDirty=true, condição registrada sem certificar o ambiente de build como checkout limpo.

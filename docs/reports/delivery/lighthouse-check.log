@@ -1,0 +1,7 @@
+
+> jungle-gaming-marketplace@0.1.0 audit:check
+> node scripts/check-lighthouse.mjs
+
+Metas não atingidas:
+home/mobile performance: 77 < 90
+detail/mobile performance: 84 < 90
