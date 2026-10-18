@@ -90,7 +90,7 @@ export const orderHandlers = [
   }),
   http.get('*/api/orders/:id', ({request,params}) => commerceResponse(request,true,({userId,database}) => {
     const record = database.orders[String(params.id)]
-    if (!record || record.order.userId !== userId) return problem('NOT_FOUND','Pedido não encontrado.',404)
+    if (!record?.order || record.order.userId !== userId) return problem('NOT_FOUND','Pedido não encontrado.',404)
     settleOrder(record,database)
     return HttpResponse.json(record.order)
   })),

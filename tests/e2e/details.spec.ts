@@ -85,7 +85,10 @@ test('real Socket.IO updates price and capacity while selection remains safe', a
   await expect(page.getByRole('button', { name: 'Edição indisponível', exact: true })).toBeDisabled()
   await expect(page.getByText('Preço ou disponibilidade atualizados pela rede.', { exact: true })).toBeVisible()
   await page.getByRole('radio', { name: '1/10', exact: true }).check()
-  await expect(page.getByRole('link', { name: 'Comprar NFT', exact: true })).toHaveAttribute('href', /edition=ten.*quantity=1/)
+  await page.getByRole('button', { name: 'Comprar NFT', exact: true }).click()
+  await expect(page).toHaveURL('/cart')
+  await expect(page.getByTestId('cart-item-emerald-ape-ten')).toContainText('1/10')
+  await expect(page.getByTestId('cart-item-emerald-ape-ten').getByRole('group', { name: 'Quantidade', exact: true })).toContainText('1')
 })
 test('@visual NFT detail responsive layout', async ({ page }) => {
   await page.goto('/nfts/emerald-ape')
