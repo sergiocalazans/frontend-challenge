@@ -1,5 +1,6 @@
 import type { SessionUser } from '@/features/auth/contracts'
-export interface SessionStore { users: (SessionUser & { salt: string; passwordHash: string })[]; sessions: Record<string, { userId: string; expiresAt: number }> }
+import type { ProfileInput } from '@/features/profile/contracts'
+export interface SessionStore { users: (SessionUser & { salt: string; passwordHash: string; profile?:Omit<ProfileInput,'name'|'email'> })[]; sessions: Record<string, { userId: string; expiresAt: number }> }
 let memory: SessionStore = { users: demoUsers(), sessions: {} }
 export function readSessionStore(): SessionStore {
   try { return JSON.parse(localStorage.getItem('kurio.mock-auth.v1') ?? 'null') as SessionStore ?? memory } catch { return memory }

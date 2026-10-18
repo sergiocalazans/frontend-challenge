@@ -62,6 +62,7 @@ test('account layout supports direct routes, navigation and narrow content', asy
 test('@visual account composition', async ({ page }) => {
   await loginViaApi(page)
   await page.goto('/account/profile')
+  await expect(page.getByRole('form',{name:'Dados do perfil'}).getByLabel('Nome de exibição')).toHaveValue('Ana Colecionadora')
   await page.evaluate(() => document.fonts.ready)
   await expect(page).toHaveScreenshot('account-layout.png', { fullPage: true, animations: 'disabled' })
 })

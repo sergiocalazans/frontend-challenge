@@ -93,3 +93,7 @@ O stream público existente invalida carrinho/catálogo e informa mudanças. Pol
 ## Eventos privados e recuperação
 
 `docs/REALTIME.md` documenta autenticação de subscriptions e limitações do binding. O servidor simulado valida a sessão a cada envio e filtra o proprietário. O cliente filtra ID/versão/recurso/sessão e invalida REST em vez de aplicar status do evento ao recibo. Conexão e reconexão reconsultam o pedido ativo; polling de 15 s é fallback. Encerramento remove listeners, timers e conexão. O PR independente de auditorias não incorpora esta branch até integração autorizada.
+
+## Perfil integrado à conta
+
+A rota /account/profile agora usa ProfilePage lazy, GET/PATCH /profile e POST /profile/password. Dados adicionais ficam no usuário de session-store; nome/e-mail são compartilhados com sessão/login. O apelido do perfil acompanha a carteira principal. Query privada por userId, token capturado e revalidação após latência/hashing protegem gravações. PBKDF2 é compartilhado com auth; senha nova revoga outras sessões e mantém a atual. Avatar é data URL limitada/validada, sem upload externo. ENS opcional e formulários com confirmações independentes são decisões de UX. Detalhes em docs/PROFILE.md; descrições antigas de placeholder de perfil são históricas e foram substituídas por esta implementação.
