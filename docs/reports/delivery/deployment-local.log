@@ -1,0 +1,27 @@
+
+> jungle-gaming-marketplace@0.1.0 test:deployment
+> playwright test --config playwright.deployment.config.ts
+
+
+Running 12 tests using 1 worker
+
+(node:28040) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [deployment-desktop] › tests\deployment\deployment.spec.ts:6:1 › deployment serves the actual worker and build metadata without rewriting reserved paths (233ms)
+  ok  2 [deployment-desktop] › tests\deployment\deployment.spec.ts:20:1 › deep links, profile, wallets, authenticated session and cart survive refresh (8.8s)
+  ok  3 [deployment-desktop] › tests\deployment\deployment.spec.ts:35:1 › real Socket.IO revalidates price and recovers an interrupted pending order without another purchase (7.6s)
+  ok  4 [deployment-desktop] › tests\deployment\deployment.spec.ts:50:1 › deterministic MSW scenarios expose loading, empty, error and reset recovery (5.3s)
+(node:19332) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  5 [deployment-tablet] › tests\deployment\deployment.spec.ts:6:1 › deployment serves the actual worker and build metadata without rewriting reserved paths (173ms)
+  ok  6 [deployment-tablet] › tests\deployment\deployment.spec.ts:20:1 › deep links, profile, wallets, authenticated session and cart survive refresh (8.0s)
+  ok  7 [deployment-tablet] › tests\deployment\deployment.spec.ts:35:1 › real Socket.IO revalidates price and recovers an interrupted pending order without another purchase (6.9s)
+  ok  8 [deployment-tablet] › tests\deployment\deployment.spec.ts:50:1 › deterministic MSW scenarios expose loading, empty, error and reset recovery (5.1s)
+(node:29964) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  9 [deployment-mobile] › tests\deployment\deployment.spec.ts:6:1 › deployment serves the actual worker and build metadata without rewriting reserved paths (136ms)
+  ok 10 [deployment-mobile] › tests\deployment\deployment.spec.ts:20:1 › deep links, profile, wallets, authenticated session and cart survive refresh (8.1s)
+  ok 11 [deployment-mobile] › tests\deployment\deployment.spec.ts:35:1 › real Socket.IO revalidates price and recovers an interrupted pending order without another purchase (7.1s)
+  ok 12 [deployment-mobile] › tests\deployment\deployment.spec.ts:50:1 › deterministic MSW scenarios expose loading, empty, error and reset recovery (5.1s)
+
+  12 passed (1.2m)

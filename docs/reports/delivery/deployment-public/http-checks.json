@@ -1,0 +1,86 @@
+{
+  "url": "https://frontend-challenge-pi-six.vercel.app",
+  "checkedAt": "2026-10-18T14:22:49.8015073Z",
+  "expectedCommit": "58188fc7078755f9a627c8c69bb9fa1f6d0d1954",
+  "observations": [
+    {
+      "path": "/build-info.json",
+      "status": 200,
+      "contentType": [
+        "application/json; charset=utf-8"
+      ],
+      "cacheControl": [
+        "public, must-revalidate, max-age=0"
+      ],
+      "serviceWorkerAllowed": null
+    },
+    {
+      "path": "/mockServiceWorker.js",
+      "status": 200,
+      "contentType": [
+        "application/javascript; charset=utf-8"
+      ],
+      "cacheControl": [
+        "no-store, must-revalidate, no-cache"
+      ],
+      "serviceWorkerAllowed": [
+        "/"
+      ]
+    },
+    {
+      "path": "/account/profile",
+      "status": 200,
+      "contentType": [
+        "text/html; charset=utf-8"
+      ],
+      "cacheControl": [
+        "public, must-revalidate, max-age=0"
+      ],
+      "serviceWorkerAllowed": null
+    },
+    {
+      "path": "/checkout",
+      "status": 200,
+      "contentType": [
+        "text/html; charset=utf-8"
+      ],
+      "cacheControl": [
+        "public, must-revalidate, max-age=0"
+      ],
+      "serviceWorkerAllowed": null
+    },
+    {
+      "path": "/nfts/emerald-ape",
+      "status": 200,
+      "contentType": [
+        "text/html; charset=utf-8"
+      ],
+      "cacheControl": [
+        "public, must-revalidate, max-age=0"
+      ],
+      "serviceWorkerAllowed": null
+    },
+    {
+      "path": "/api/deployment-probe",
+      "status": 404,
+      "contentType": [
+        "text/plain; charset=utf-8"
+      ],
+      "cacheControl": [
+        "public, must-revalidate, max-age=0"
+      ],
+      "serviceWorkerAllowed": null
+    },
+    {
+      "path": "/assets/missing-deployment.js",
+      "status": 404,
+      "contentType": [
+        "text/plain; charset=utf-8"
+      ],
+      "cacheControl": [
+        "public, must-revalidate, max-age=0"
+      ],
+      "serviceWorkerAllowed": null
+    }
+  ]
+}

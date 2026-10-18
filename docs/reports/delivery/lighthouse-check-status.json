@@ -1,0 +1,5 @@
+{
+  "command": "npm run audit:check",
+  "exitCode": 1,
+  "checkedAt": "2026-10-18T14:23:07.2641301Z"
+}

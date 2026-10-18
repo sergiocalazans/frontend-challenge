@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-18T14:08:34.613Z",
+  "sourceCommit": "18addfcd42b8f25635d463b6b9e85713a0775968",
+  "branch": "feature/delivery-audit",
+  "node": "v22.18.0",
+  "platform": "win32",
+  "arch": "x64",
+  "os": "10.0.26200",
+  "cpu": "AMD Ryzen 5 7520U with Radeon Graphics         ",
+  "totalMemoryBytes": 6162739200,
+  "versions": {
+    "react": "19.3.1",
+    "@tanstack/react-router": "1.170.45",
+    "@tanstack/react-query": "5.104.3",
+    "axios": "1.20.0",
+    "tailwindcss": "4.3.3",
+    "eslint": "9.39.5",
+    "vite": "7.3.7",
+    "typescript": "5.9.3",
+    "vitest": "4.1.12",
+    "@playwright/test": "1.64.1",
+    "msw": "2.15.0",
+    "socket.io-client": "4.8.4",
+    "@mswjs/socket.io-binding": "0.2.0",
+    "lighthouse": "12.6.1"
+  },
+  "indexSha256": "cacc86515d583a7b153a53346f6449f7355702ae6e49404b5d756b7d7b2dd42b",
+  "lockfileSha256": "900c8c6ea2e7184ee98bfdccdbe4ad500e31b241bcc5384f6b9ee1f3e96e5221",
+  "buildInfo": {
+    "commit": "18addfcd42b8f25635d463b6b9e85713a0775968",
+    "gitDirty": false,
+    "mocksEnabled": true,
+    "workerSha256": "b2b0049f0e51b706f3e67d9385f389bfaec18f645d33ccb6aba61a55cdf9f676"
+  },
+  "conditions": "Default demo mocks; all fonts/images enabled; one E2E worker; no concurrent Lighthouse/E2E. Build was produced with clean Git state; only audit documentation changed afterwards."
+}
