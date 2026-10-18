@@ -33,7 +33,7 @@ export function FavoriteButton({ nftId, userId }: { nftId: string; userId?: stri
     if (!userId) { void navigate({ href: `/login?returnTo=${encodeURIComponent(href)}` }); return }
     mutation.mutate({ saved: !saved, token: sessionToken() })
   }
-  return <div className="space-y-2"><Button variant="outline" onClick={toggle} disabled={mutation.isPending || Boolean(userId && (query.isPending || query.isError))} aria-pressed={saved}><Heart aria-hidden className={saved ? 'fill-primary' : ''} />{saved ? 'Remover dos favoritos' : 'Favoritar'}</Button>
+  return <div className="min-h-[76px] space-y-2"><Button variant="outline" onClick={toggle} disabled={mutation.isPending || Boolean(userId && (query.isPending || query.isError))} aria-pressed={saved}><Heart aria-hidden className={saved ? 'fill-primary' : ''} />{saved ? 'Remover dos favoritos' : 'Favoritar'}</Button>
     {userId && query.isPending && <p role="status" className="text-xs">Carregando favoritos…</p>}
     {query.isError && userId && <div role="alert"><p>Não foi possível consultar favoritos.</p><Button variant="ghost" onClick={() => void query.refetch()}>Recarregar favoritos</Button></div>}
     {mutation.isError && <p role="alert" className="text-sm text-destructive">Não foi possível alterar o favorito. Estado anterior restaurado. Tente novamente.</p>}
