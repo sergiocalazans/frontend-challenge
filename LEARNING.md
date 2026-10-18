@@ -148,3 +148,13 @@ Revise o código e execute os exemplos antes de defender a solução. O candidat
 5. **Decisões:** evento é sinal, REST é a verdade; ID e versão evitam reaplicação; token capturado impede atualizar outro usuário; reconexão reconsulta e polling de 15 s cobre perdas. Timers/listeners são liberados no encerramento.
 6. **Como testar:** `npm run test`, `npm run build`, `npm run test:e2e -- tests/e2e/realtime.spec.ts tests/e2e/commerce.spec.ts`; cenários em `docs/REALTIME.md`.
 7. **Defesa:** por que não abrir recibo diretamente pelo evento? Como autenticar no binding que não implementa handshake privado? Por que reconectar exige REST? Como uma sessão antiga é descartada? Qual a diferença entre idempotência do pedido e deduplicação de eventos?
+
+## Feature: perfil, avatar e senha
+
+1. **Implementação:** dados da conta, avatar e senha funcionais, validação cliente/servidor, persistência, conflitos, estados de rede e isolamento.
+2. **Arquivos:** features/profile, mocks/profile.ts, mocks/password.ts, session-store/auth/handlers e rota; testes profile.test.ts/profile.spec.ts e baselines de conta.
+3. **Fluxo:** formulário → validação → mutation Query → Axios com token → MSW → conta compartilhada → resposta → cache privado/sessão. Avatar selecionado é preview até salvar; senha nunca é armazenada em claro.
+4. **Tecnologias:** React/TypeScript, Query/Router, Axios, MSW, Web Crypto PBKDF2, FileReader e decodificação de imagem, Playwright/Vitest.
+5. **Decisões:** uma fonte de conta, apelido coerente com carteira principal, limites de arquivo e MIME/assinatura, ENS opcional, token e versão de credencial revalidados depois de operações assíncronas; só outras sessões são revogadas.
+6. **Como testar:** build, npm test e Playwright profile.spec.ts/design-system.spec.ts; cobre erro, retry, refresh, outro usuário, conflito, avatar inválido/removido e nova senha. Resultados e falhas em docs/PROFILE.md.
+7. **Defesa:** por que comparar o hash anterior após await? Por que o mock não aceita userId do corpo como proprietário? Por que selecionar arquivo não significa upload concluído? Como nome/e-mail e apelido permanecem consistentes? Por que reset também precisa restaurar perfil/senha?

@@ -6,7 +6,7 @@ Base inicial do desafio frontend. A marca **KURIO** foi preservada dos SVGs; o n
 
 Vite + React + TypeScript strict, TanStack Router/Query, Axios, Tailwind v4, componentes shadcn/ui adaptados, MSW, cliente Socket.IO real, Playwright, Vitest e infraestrutura Lighthouse. Há um catálogo de demonstração com quatro imagens originais e busca na URL, além de `/design-system` para experimentar os componentes, estados HTTP e eventos.
 
-**Não é a entrega completa do desafio.** Login, cadastro, sessão, catálogo, detalhes e favoritos estão implementados com mocks. Carrinho, carteiras, checkout e pedidos simulados também estão implementados. Edição de perfil/avatar/senha e realtime privado de pedidos permanecem pendentes. Não há contas reais, cobrança ou integração blockchain.
+**Não é a entrega completa do desafio.** Login, cadastro, sessão, catálogo, detalhes e favoritos estão implementados com mocks. Carrinho, carteiras, checkout e pedidos simulados também estão implementados. Perfil, avatar, alteração de senha e realtime privado de pedidos também estão implementados. Deploy público e auditoria integrada final permanecem pendentes. Não há contas reais, cobrança ou integração blockchain.
 
 ## Executar
 
@@ -106,3 +106,7 @@ Cadastre uma carteira em `/account/wallets`: endereço Ethereum fictício `0x111
 O pedido começa pendente; somente confirmed abre recibo. Recusa preserva os itens. Timeout oferece recuperar a mesma tentativa, inclusive após refresh/login, sem gerar nova chave. O rascunho é isolado por usuário. Cenários: POST `/api/demo/commerce` com `{ "action": "declined" }`, `timeout`, `pending`, `settle`, `reject-connection`, `expire-quotes`, `expire-coupon`, `disconnect` ou `reset`; `confirmed` restaura o resultado padrão para novas criações.
 
 [Contratos e fluxo de comércio](docs/CART_CHECKOUT.md), [validação e evidências do carrinho](docs/CART_CHECKOUT_VALIDATION.md). O stream público atualiza o carrinho por REST. [Realtime privado e reconexão](docs/REALTIME.md) usam `orders.subscribe` autenticado, `order.updated` e reconciliação REST, com polling de segurança de 15 s. Para simular interrupção, POST `/api/demo/realtime` com `{ "action": "disconnect" }`; para duplicatas/eventos antigos, use `duplicate` ou `stale` e `orderId`. Nenhum cenário altera diretamente a UI. Os PRs de realtime e auditoria são independentes de develop; sua integração depende de merge autorizado.
+
+## Perfil, avatar e senha
+
+Em /account/profile, edite os dados e salve. Nome/e-mail são os mesmos da sessão; o apelido acompanha a carteira principal quando cadastrada. Avatar aceita PNG/JPEG/WebP de até 256 KiB; selecionar/remover exige Salvar perfil. Alterar senha usa formulário independente, valida a senha atual e encerra outras sessões; a sessão atual permanece válida. Alterações confirmadas sobrevivem a refresh. O reset de autenticação também restaura perfil e senha. [Contratos, validação e limites](docs/PROFILE.md).
