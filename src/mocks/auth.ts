@@ -1,3 +1,5 @@
+import { disconnectWallets } from './wallets'
+import { readCommerce, writeCommerce } from './commerce-store'
 import { delay, http, HttpResponse } from 'msw'
 import type { Credentials, Registration, SessionUser } from '@/features/auth/contracts'
 import { validateCredentials } from '@/features/auth/contracts'
@@ -78,7 +80,8 @@ export const authHandlers = [
   http.delete('*/api/session', async ({ request }) => {
     if (await network()) return problem('UNAVAILABLE', 'Não foi possível sair. Tente novamente.', 503)
     if (holdLogout) await new Promise<void>(resolve => pendingLogouts.add(resolve))
-    sessionUser(request)
+    const user = sessionUser(request)
+    if (user) { const commerce = readCommerce(); disconnectWallets(user.id,commerce); writeCommerce(commerce) }
     delete database.sessions[request.headers.get('Authorization')?.replace(/^Bearer /, '') ?? '']
     persist()
     return new HttpResponse(null, { status: 204 })

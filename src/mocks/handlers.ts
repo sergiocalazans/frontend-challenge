@@ -1,3 +1,7 @@
+import { cartHandlers } from './cart'
+import { walletHandlers } from './wallets'
+import { orderHandlers } from './orders'
+import { hydrateInventory, rememberInventory } from './inventory'
 import { authHandlers } from './auth'
 import { listNfts } from './catalog'
 import { detailHandlers } from './details'
@@ -5,9 +9,11 @@ import { delay, http, HttpResponse } from 'msw'
 import { listeners, mockState, resetMocks, scenarios, type Scenario } from './state'
 
 export const handlers = [
+  ...cartHandlers, ...walletHandlers, ...orderHandlers,
   ...detailHandlers,
   ...authHandlers,
   http.get('*/api/nfts', async ({ request }) => {
+    hydrateInventory()
     const scenario = mockState.scenario
     const params = new URL(request.url).searchParams
     // Capture the response before waiting: the slow request represents an older snapshot.
@@ -28,10 +34,11 @@ export const handlers = [
     const versions = new Map(mockState.items.map(nft => [nft.id, nft.version]))
     resetMocks(body.scenario as Scenario)
     // Keep versions monotonic while connected clients are still subscribed.
-    for (const nft of mockState.items) nft.version = (versions.get(nft.id) ?? 0) + 1
+    for (const nft of mockState.items) { nft.version = (versions.get(nft.id) ?? 0) + 1; rememberInventory(nft) }
     return HttpResponse.json({ scenario: mockState.scenario })
   }),
   http.post('*/api/demo/nfts/:id/update', async ({ params, request }) => {
+    hydrateInventory()
     const nft = mockState.items.find(item => item.id === params.id)
     if (!nft) return HttpResponse.json({ code: 'NOT_FOUND' }, { status: 404 })
     let body: unknown
@@ -41,6 +48,7 @@ export const handlers = [
       nft.available = body.available
     } else nft.priceEth = nft.priceEth === '1.19' ? '1.29' : '1.19'
     nft.version += 1
+    rememberInventory(nft, Boolean(body && typeof body === 'object' && 'available' in body))
     const event = { eventId: `${nft.id}:${nft.version}`, nftId: nft.id, version: nft.version }
     listeners.forEach(emit => emit(event))
     return HttpResponse.json({ version: nft.version })
