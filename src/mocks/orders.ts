@@ -7,6 +7,7 @@ import { storedWallets, setConnectionRejection } from './wallets'
 import { readCommerce, resetCommerceStore, storedCart, writeCommerce, type CommerceStore, type StoredOrder } from './commerce-store'
 import { commerceProblem as problem, commerceResponse, requestBody } from './commerce-http'
 import { resetMocks } from './state'
+import { publishOrder } from './realtime-state'
 export type PaymentMode = 'confirmed' | 'declined' | 'timeout' | 'pending'
 let paymentMode: PaymentMode = 'confirmed'
 export function resetCommerce() { resetCommerceStore(); resetInventory(); paymentMode = 'confirmed'; setConnectionRejection(false) }
@@ -42,6 +43,14 @@ export function settleOrder(record: StoredOrder, database: CommerceStore) {
     cart.revision++
   } else { order.reason = 'Pagamento recusado na simulação. Seus itens foram preservados.'; changeInventory(order.quote.items,1) }
   writeCommerce(database)
+  publishOrder({eventId:`${order.id}:${order.version}`,orderId:order.id,userId:order.userId,version:order.version,status:order.status})
+}
+// A connected subscriber drives the local simulator; REST also settles after refresh.
+export function settleUserOrders(userId: string) {
+  const database = readCommerce()
+  for (const record of Object.values(database.orders)) {
+    if (record.order.userId === userId) settleOrder(record,database)
+  }
 }
 export const orderHandlers = [
   http.post('*/api/quotes', async ({request}) => {

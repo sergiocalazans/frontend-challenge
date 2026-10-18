@@ -15,7 +15,7 @@ export const cartOptions = (context: CommerceIdentity) => queryOptions({ queryKe
   return (await http.get<Cart>('/cart',{...config(context),signal})).data
 }, staleTime:0 })
 export const walletsOptions = (context: CommerceIdentity) => queryOptions({ queryKey:walletsKey(context.userId!),queryFn:async ({signal}) => (await http.get<Wallets>('/wallets',{...config(context),signal})).data,staleTime:0 })
-export const orderOptions = (context: CommerceIdentity,id: string) => queryOptions({queryKey:orderKey(context.userId!,id),queryFn:async ({signal}) => (await http.get<Order>(`/orders/${encodeURIComponent(id)}`,{...config(context),signal})).data,staleTime:0,refetchInterval:query => query.state.data?.status === 'pending' ? 1000 : false})
+export const orderOptions = (context: CommerceIdentity,id: string) => queryOptions({queryKey:orderKey(context.userId!,id),queryFn:async ({signal}) => (await http.get<Order>(`/orders/${encodeURIComponent(id)}`,{...config(context),signal})).data,staleTime:0,refetchInterval:query => query.state.data?.status === 'pending' ? 15_000 : false})
 export async function addCartItem(context: CommerceIdentity,input: CartInput,key: string) { return (await http.post<Cart>('/cart/items',input,{ headers:{...config(context).headers,'Idempotency-Key':key} })).data }
 export async function changeCartItem(context: CommerceIdentity,id: string,quantity: number) { return (await http.patch<Cart>(`/cart/items/${encodeURIComponent(id)}`,{quantity},config(context))).data }
 export async function removeCartItem(context: CommerceIdentity,id: string) { return (await http.delete<Cart>(`/cart/items/${encodeURIComponent(id)}`,config(context))).data }

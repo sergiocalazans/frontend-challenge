@@ -9,20 +9,21 @@ import { EmptyState,ErrorState } from '@/components/shared/async-state'
 import { SummarySkeleton } from '@/components/shared/content-skeletons'
 import { saveCheckoutDraft } from './checkout-storage'
 import { orderOptions } from './api'
-import { useCommerceIdentity } from './use-commerce'
+import { useCommerceIdentity, useOrderRealtime } from './use-commerce'
 import { PurchaseSummary } from './summary'
 import { purchaseError } from './errors'
 import type { Order } from './contracts'
 export function OrderPage() {
   const {orderId} = useParams({from:'/orders/$orderId'}),{context,ready} = useCommerceIdentity()
   const query = useQuery({...orderOptions(context,orderId),enabled:ready && Boolean(context.userId)})
+  const connected = useOrderRealtime(context,orderId,ready && Boolean(context.userId))
   const client = useQueryClient(),status = query.data?.status,userId = context.userId
   useEffect(() => {if(status && status !== 'pending' && userId) {if(status === 'confirmed') saveCheckoutDraft(userId,null);void client.invalidateQueries({queryKey:['private',userId,'cart'],exact:true})}},[client,status,userId])
   if(query.isPending) return <SummarySkeleton />
   if(axios.isAxiosError(query.error) && query.error.response?.status === 404) return <EmptyState title="Pedido não encontrado"><p>O pedido não existe ou não pertence à sua conta.</p><Button asChild className="mt-4"><Link to="/cart">Voltar ao carrinho</Link></Button></EmptyState>
   if(!query.data) return <ErrorState message={purchaseError(query.error)} onRetry={() => void query.refetch()} />
   const order = query.data
-  return <><h1 className="mb-6 text-2xl font-semibold">Pedido</h1>{query.isError && <ErrorState message="Não foi possível atualizar o pedido." onRetry={() => void query.refetch()} />}
+  return <><h1 className="mb-6 text-2xl font-semibold">Pedido</h1><p role="status" className="mb-5 text-xs text-muted-foreground">{connected ? 'Atualizações do pedido conectadas.' : 'Reconectando atualizações. O pedido continua sendo consultado com segurança.'}</p>{query.isError && <ErrorState message="Não foi possível atualizar o pedido." onRetry={() => void query.refetch()} />}
     {order.status === 'pending' ? <section className="mx-auto max-w-xl space-y-5 rounded-xl border bg-card p-6"><h2 className="text-xl font-semibold">Pedido em processamento</h2><p role="status">Aguardando resultado da simulação. Esta página consulta o pedido existente; recarregar não cria outra compra.</p><p className="break-all text-xs">ID: {order.id}</p><SummarySkeleton /></section> : order.status === 'declined' ? <section className="mx-auto max-w-xl space-y-5 rounded-xl border p-6"><h2 className="text-xl font-semibold">Pagamento recusado</h2><p role="alert">{order.reason}</p><Button asChild><Link to="/cart">Revisar carrinho</Link></Button></section> : <Receipt key={order.id} order={order} />}
   </>
 }

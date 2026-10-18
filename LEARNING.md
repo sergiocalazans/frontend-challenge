@@ -128,3 +128,13 @@ Revise o código e execute os exemplos antes de defender a solução. O candidat
 5. **Decisões:** bigint evita erro financeiro decimal; estoque é separado por edição; fingerprint impede finalizar cotação antiga; chave idempotente recupera timeout; recibo copia snapshot; caches e rascunhos incluem usuário. Canais privados de Socket.IO aguardam a próxima branch, conforme sequência escolhida.
 6. **Como testar:** `npm run test` cobre contratos MSW e precisão; `npm run test:e2e` cobre UI. Cenários e credenciais estão em `docs/CART_CHECKOUT.md`. Os relatórios finais ficam em `docs/CART_CHECKOUT_VALIDATION.md`.
 7. **Defesa:** por que usar string e bigint para ETH? Por que não gerar nova chave após timeout? Como um pedido pode ser recuperado depois de uma cotação expirar? Como reservar/liberar uma edição sem afetar outra? Por que um recibo não consulta o preço atual? Qual diferença entre rascunho local, cache Query e banco MSW? O que ainda falta no realtime privado?
+
+## Socket.IO privado e reconciliação
+
+1. **Implementação:** pedidos recebem eventos reais Socket.IO, reconciliam por REST, retomam após interrupção e ignoram duplicatas/versões antigas.
+2. **Arquivos:** `lib/realtime.ts`, `mocks/socket.ts`, `realtime-state.ts`, `orders.ts`, `commerce/use-commerce.ts`, `order-page.tsx` e testes realtime.
+3. **Fluxo:** sessão → orders.subscribe(token) → validação no mock → pedido persistido → order.updated → invalidação da query privada → GET autenticado → confirmação/recusa e recibo.
+4. **Tecnologias:** Socket.IO Client, binding MSW, Axios, TanStack Query, React, TypeScript, Vitest e Playwright.
+5. **Decisões:** evento é sinal, REST é a verdade; ID e versão evitam reaplicação; token capturado impede atualizar outro usuário; reconexão reconsulta e polling de 15 s cobre perdas. Timers/listeners são liberados no encerramento.
+6. **Como testar:** `npm run test`, `npm run build`, `npm run test:e2e -- tests/e2e/realtime.spec.ts tests/e2e/commerce.spec.ts`; cenários em `docs/REALTIME.md`.
+7. **Defesa:** por que não abrir recibo diretamente pelo evento? Como autenticar no binding que não implementa handshake privado? Por que reconectar exige REST? Como uma sessão antiga é descartada? Qual a diferença entre idempotência do pedido e deduplicação de eventos?

@@ -85,3 +85,7 @@ Detalhes do contrato, decisões visuais, política de estado e cenários estão 
 Contratos e regras em [docs/CART_CHECKOUT.md](docs/CART_CHECKOUT.md). Carrinho/carteiras/cotação/pedido passam por Axios/MSW. O mock persiste inventário por edição e dados por proprietário; o cliente usa cache privado e rascunho por usuário. A cotação é a referência do fechamento; o backend compara fingerprint e reserva estoque antes de registrar pending. Idempotência precede revalidação de cotação ao recuperar uma tentativa existente. GET de pedido reconcilia o resultado e produz recibo imutável. Valores usam bigint no mock e strings no transporte.
 
 O stream público existente invalida carrinho/catálogo e informa mudanças. Polling recupera pedido nesta etapa; canais privados, order.updated e reconexão são a próxima feature. As branches serão sequenciais, aguardando merge autorizado entre elas. Nenhum resultado parcial equivale à conclusão dos 12 grupos do desafio.
+
+## Eventos privados e recuperação
+
+`docs/REALTIME.md` documenta autenticação de subscriptions e limitações do binding. O servidor simulado valida a sessão a cada envio e filtra o proprietário. O cliente filtra ID/versão/recurso/sessão e invalida REST em vez de aplicar status do evento ao recibo. Conexão e reconexão reconsultam o pedido ativo; polling de 15 s é fallback. Encerramento remove listeners, timers e conexão. O PR independente de auditorias não incorpora esta branch até integração autorizada.
