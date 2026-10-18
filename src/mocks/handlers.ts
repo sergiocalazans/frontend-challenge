@@ -1,0 +1,60 @@
+import { cartHandlers } from './cart'
+import { profileHandlers } from './profile'
+import { walletHandlers } from './wallets'
+import { orderHandlers } from './orders'
+import { realtimeHandlers } from './socket'
+import { hydrateInventory, rememberInventory } from './inventory'
+import { authHandlers } from './auth'
+import { listNfts } from './catalog'
+import { detailHandlers } from './details'
+import { delay, http, HttpResponse } from 'msw'
+import { listeners, mockState, resetMocks, scenarios, type Scenario } from './state'
+
+export const handlers = [
+  ...profileHandlers,
+  ...realtimeHandlers,
+  ...cartHandlers, ...walletHandlers, ...orderHandlers,
+  ...detailHandlers,
+  ...authHandlers,
+  http.get('*/api/nfts', async ({ request }) => {
+    hydrateInventory()
+    const scenario = mockState.scenario
+    const params = new URL(request.url).searchParams
+    // Capture the response before waiting: the slow request represents an older snapshot.
+    const result = listNfts(scenario === 'empty' ? [] : structuredClone(mockState.items), params)
+    if (!result) return HttpResponse.json({ code: 'INVALID_CATALOG_QUERY' }, { status: 400 })
+    const failsOnce = scenario === 'flaky' && mockState.failuresLeft > 0
+    if (failsOnce) mockState.failuresLeft -= 1
+    await delay(scenario === 'slow' ? 1800 : scenario === 'race' && params.get('q') === 'Emerald' ? 2400 : 150)
+    if (scenario === 'offline') return HttpResponse.error()
+    if (scenario === 'error' || failsOnce) return HttpResponse.json({ code: 'UNAVAILABLE' }, { status: 503 })
+    return HttpResponse.json(result)
+  }),
+  http.post('*/api/demo/scenario', async ({ request }) => {
+    const body: unknown = await request.json()
+    if (!body || typeof body !== 'object' || !('scenario' in body) || !scenarios.includes(body.scenario as Scenario)) {
+      return HttpResponse.json({ code: 'INVALID_SCENARIO' }, { status: 400 })
+    }
+    const versions = new Map(mockState.items.map(nft => [nft.id, nft.version]))
+    resetMocks(body.scenario as Scenario)
+    // Keep versions monotonic while connected clients are still subscribed.
+    for (const nft of mockState.items) { nft.version = (versions.get(nft.id) ?? 0) + 1; rememberInventory(nft) }
+    return HttpResponse.json({ scenario: mockState.scenario })
+  }),
+  http.post('*/api/demo/nfts/:id/update', async ({ params, request }) => {
+    hydrateInventory()
+    const nft = mockState.items.find(item => item.id === params.id)
+    if (!nft) return HttpResponse.json({ code: 'NOT_FOUND' }, { status: 404 })
+    let body: unknown
+    try { const text = await request.text(); body = text ? JSON.parse(text) : {} } catch { return HttpResponse.json({ code: 'INVALID_BODY' }, { status: 400 }) }
+    if (body && typeof body === 'object' && 'available' in body) {
+      if (typeof body.available !== 'number' || !Number.isInteger(body.available) || body.available < 0 || body.available > 10000) return HttpResponse.json({ code: 'INVALID_AVAILABILITY' }, { status: 422 })
+      nft.available = body.available
+    } else nft.priceEth = nft.priceEth === '1.19' ? '1.29' : '1.19'
+    nft.version += 1
+    rememberInventory(nft, Boolean(body && typeof body === 'object' && 'available' in body))
+    const event = { eventId: `${nft.id}:${nft.version}`, nftId: nft.id, version: nft.version }
+    listeners.forEach(emit => emit(event))
+    return HttpResponse.json({ version: nft.version })
+  }),
+]
