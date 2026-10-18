@@ -1,5 +1,7 @@
 # Socket.IO e reconciliação
 
+Registro histórico da implementação independente. Os PRs #9 e #10 já foram integrados em develop; a validação conjunta atual está em [DELIVERY_REPORT.md](../DELIVERY_REPORT.md). As dependências e medições descritas abaixo representam o momento desta feature.
+
 Branch `feature/realtime`, de `develop` b1ad9f1, working tree inicialmente limpo; PR #8 integrado externamente. Auditoria será um PR independente de develop em `feature/e23-tests`, por escolha do candidato; sua integração com este PR é pendente até ambos os merges autorizados.
 
 ## Plano e arquivos

@@ -2,7 +2,7 @@
 
 Marketplace com dados simulados em React/TypeScript/Vite. A marca KURIO vem dos SVGs. Requisitos: [CHALLENGE.md](CHALLENGE.md); [arquitetura](ARCHITECTURE.md); [defesa técnica](LEARNING.md).
 
-Catálogo, detalhes, favoritos, autenticação, carrinho, carteiras, checkout, pedidos, perfil/avatar/senha e Socket.IO estão implementados. **Ainda não há URL pública nem validação na Vercel.** Fidelidade integral ao SVG e metas finais de performance não estão certificadas. [Preparação de deploy e evidências](docs/DEPLOYMENT.md), [perfil](docs/PROFILE.md), [auditoria E2E anterior](docs/E2E_AUDIT.md).
+Catálogo, detalhes, favoritos, autenticação, carrinho, carteiras, checkout, pedidos, perfil/avatar/senha e Socket.IO estão implementados. **[Demonstração pública](https://frontend-challenge-pi-six.vercel.app/)**: 12/12 testes de deploy aprovados em 18/10/2026, SHA 58188fc; suíte completa local 162/162. Persistência é local ao navegador e todos os dados/transações são fictícios. Fidelidade integral ao SVG e metas de performance mobile continuam pendentes. [Auditoria final](DELIVERY_REPORT.md), [deploy e evidências](docs/DEPLOYMENT.md), [perfil](docs/PROFILE.md), [auditoria E2E histórica](docs/E2E_AUDIT.md).
 
 ## Setup e comandos
 
@@ -104,8 +104,14 @@ npm run test:deployment
 
 O servidor local aplica o subconjunto de rewrites/headers usado aqui; não é Vercel CLI nem infraestrutura Vercel. O teste cobre worker/checksum/headers, deep links/refresh, perfil/carteiras/sessão/carrinho e compra com preço alterado, interrupção Socket.IO e recuperação, além de cenários determinísticos. Relatórios HTML/JSON em reports/deployment/; evidências versionadas em docs/reports/vercel/.
 
-**Após deploy autorizado**, substitua DEPLOYMENT_URL pela URL HTTPS pública e DEPLOYMENT_EXPECTED_SHA pela SHA completa implantada, e execute o mesmo comando. Ele não faz deploy. Registre URL/SHA/data, resultados e traces; verifique acesso público sem proteção de preview. A versão publicada precisa corresponder ao código entregue. Até essa execução, worker/Socket.IO/refresh na Vercel permanecem NOT TESTED, mesmo com ensaio local aprovado.
+**Após cada deploy autorizado**, substitua DEPLOYMENT_URL pela URL HTTPS pública e DEPLOYMENT_EXPECTED_SHA pela SHA completa implantada, e execute o mesmo comando. Ele não faz deploy. Registre URL/SHA/data, resultados e traces; verifique acesso público sem proteção de preview. A versão publicada precisa corresponder ao código entregue. A execução pública de 18/10/2026 passou 12/12 com a URL acima e SHA 58188fc7078755f9a627c8c69bb9fa1f6d0d1954; HTML/JSON em docs/reports/delivery/deployment-public. Esse resultado vale para os cenários e versão testados, sem substituir a suíte completa local nem certificar outros navegadores.
 
 ## Design e materiais
 
 [Mapa de frames](design/FRAME_MAP.md) e [especificação](design/DESIGN_SPEC.md) documentam os SVGs preservados. Assets são quatro imagens originais WebP e fonte local IBM Plex Mono substituta. Não há SVG de tela inteira no lugar de interface funcional. Fonte, composição mobile, navegação/footer e confirmações têm desvios documentados; baselines não certificam fidelidade integral. `npm run assets:extract` reproduz os assets individuais. Estrutura por funcionalidades em src/features/, componentes em src/components/, contratos/transporte separados de src/mocks/.
+
+## Auditoria final de entrega
+
+[Nota de passagem do projeto](PROJECT_NOTE.md): estado verificado, fluxo de dados, reprodução e prioridades para a defesa.
+
+[DELIVERY_REPORT.md](DELIVERY_REPORT.md) compara cada requisito/critério eliminatório com código e execução reais, separa PASS/FAIL/NOT TESTED e identifica a SHA auditada. Relatórios finais ficam em docs/reports/delivery/. O PR de entrega #13 foi publicado como rascunho e mesclado externamente durante a auditoria; o agente não fez merge/deploy/release. A validação pública posterior passou, mas a conclusão geral continua FAIL por fidelidade visual e performance mobile. Lighthouse: performance início 77/100 e detalhe 84/98 (mobile/desktop); A/BP=100, SEO=92.
